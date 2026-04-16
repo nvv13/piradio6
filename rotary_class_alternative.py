@@ -23,7 +23,7 @@
 
 import os,sys,pwd
 import time
-import RPi.GPIO as GPIO
+import OPi.GPIO as GPIO
 import threading
 
 class RotaryEncoderAlternative:
@@ -51,7 +51,7 @@ class RotaryEncoderAlternative:
         self.button = button
         self.callback = callback
 
-        GPIO.setmode(GPIO.BCM)
+        GPIO.setmode(GPIO.BOARD)
         GPIO.setwarnings(False)
         
         try:

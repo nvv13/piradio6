@@ -22,7 +22,7 @@
 # sudo pip3 install spidev
 
 import sh1106_config
-import RPi.GPIO as GPIO
+import OPi.GPIO as GPIO
 import time
 import pdb
 import numpy as np

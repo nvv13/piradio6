@@ -20,7 +20,7 @@ from threading import Thread
 from sys import exit
 
 try:
-    import RPi.GPIO as GPIO
+    import OPi.GPIO as GPIO
 except ImportError:
     raise ImportError("This library requires the RPi.GPIO module\nInstall with: sudo pip install RPi.GPIO")
 
@@ -209,7 +209,7 @@ def setup():
 
     atexit.register(_exit)
 
-    GPIO.setmode(GPIO.BCM)
+    GPIO.setmode(GPIO.BOARD)
     GPIO.setwarnings(False)
     GPIO.setup([DAT,CLK],GPIO.OUT)
 

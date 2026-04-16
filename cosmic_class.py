@@ -16,7 +16,7 @@
 
 import os,sys,pwd
 import time,pdb
-import RPi.GPIO as GPIO
+import OPi.GPIO as GPIO
 
 class Button:
 
@@ -28,7 +28,7 @@ class Button:
         if self.button > 0:
             msg = "Creating button for GPIO " +  str(self.button)
             log.message(msg, log.DEBUG)
-            GPIO.setmode(GPIO.BCM)
+            GPIO.setmode(GPIO.BOARD)
             GPIO.setwarnings(False)
 
             try:

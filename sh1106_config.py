@@ -32,7 +32,7 @@
 # THE SOFTWARE.
 #
 
-import RPi.GPIO as GPIO
+import OPi.GPIO as GPIO
 import time
 from smbus import SMBus
 import spidev
@@ -76,7 +76,7 @@ def i2c_writebyte(reg, value):
 def module_init():
     # print("module_init")
 
-    GPIO.setmode(GPIO.BCM)
+    GPIO.setmode(GPIO.BOARD)
     GPIO.setwarnings(False)
     GPIO.setup(RST_PIN, GPIO.OUT)
     GPIO.setup(DC_PIN, GPIO.OUT)

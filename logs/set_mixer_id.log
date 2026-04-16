@@ -1,0 +1,8 @@
+
+/usr/share/radio/scripts/set_mixer_id.sh Thu Apr 16 17:24:43 UTC 2026
+Card 0 "headphones"
+mixer_volume_id=0
+Could not find a suitable mixer control for volume for card 0
+/var/lib/radiod/mixer_volume_id unchanged
+amixer -c 0 controls
+Exiting

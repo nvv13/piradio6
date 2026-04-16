@@ -13,7 +13,7 @@
 #
 
 import sys
-import RPi.GPIO as GPIO
+import OPi.GPIO as GPIO
 import time
 
 
@@ -35,7 +35,7 @@ class RotarySwitch:
         self.callback = callback
 
         # Set up switch lines
-        GPIO.setmode(GPIO.BCM)
+        GPIO.setmode(GPIO.BOARD)
         GPIO.setwarnings(False)
 
         if self.switch1 > 0:

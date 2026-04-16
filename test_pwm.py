@@ -12,7 +12,7 @@ import time
 
 led = 16
 
-GPIO.setmode(GPIO.BCM)
+GPIO.setmode(GPIO.BOARD)
 
 GPIO.setup(led, GPIO.OUT)
 pwm_led1 = GPIO.PWM(led, 100)

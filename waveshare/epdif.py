@@ -29,7 +29,7 @@
 #
 
 import spidev
-import RPi.GPIO as GPIO
+import OPi.GPIO as GPIO
 import time
 
 # Pin definition
@@ -54,7 +54,7 @@ def spi_transfer(data):
     SPI.writebytes(data)
 
 def epd_init():
-    GPIO.setmode(GPIO.BCM)
+    GPIO.setmode(GPIO.BOARD)
     GPIO.setwarnings(False)
     GPIO.setup(RST_PIN, GPIO.OUT)
     GPIO.setup(DC_PIN, GPIO.OUT)

@@ -25,7 +25,7 @@ import pdb
 import signal
 import subprocess
 import socket
-import RPi.GPIO as GPIO
+import OPi.GPIO as GPIO
 
 from time import strftime
 from display_class import Display

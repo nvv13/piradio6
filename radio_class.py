@@ -654,7 +654,7 @@ class Radio:
 
         self.config.display()
         # Get Configuration parameters /etc/radiod.conf
-        self.boardrevision = self.getBoardRevision()
+        #self.boardrevision = self.getBoardRevision()
         self.mpdport = self.config.mpdport
         self.udpport = self.config.remote_control_port
         self.udphost = self.config.remote_listen_host
@@ -668,9 +668,9 @@ class Radio:
         OSrelease = OSrelease.replace("PRETTY_NAME=", "OS release: ")
         self.OSrelease = OSrelease.replace('"', '')
         log.message(self.OSrelease + ' ' + self.arch, log.INFO)
-        (x,self.OSname) = self.OSrelease.split('(')
-        self.OSname = self.OSname.replace(')','')
-        self.OSname = self.OSname.title()
+        #(x,self.OSname) = self.OSrelease.split('(')
+        #self.OSname = self.OSname.replace(')','')
+        #self.OSname = self.OSname.title()
         myos = self.execCommand('uname -a')
         log.message(myos, log.INFO)
 

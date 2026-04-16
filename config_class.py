@@ -18,7 +18,7 @@ import sys
 import configparser
 from log_class import Log
 from constants import *
-import RPi.GPIO as GPIO
+import OPi.GPIO as GPIO
 import pdb
 
 # System files

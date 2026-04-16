@@ -27,7 +27,7 @@
 import smbus
 import time,sys
 import pdb
-import RPi.GPIO as GPIO                       
+import OPi.GPIO as GPIO                       
 from config_class import Configuration
 
 rev = GPIO.RPI_REVISION

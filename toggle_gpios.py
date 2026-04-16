@@ -12,11 +12,11 @@
 #            The authors shall not be liable for any loss or damage however caused.
 #
 
-import RPi.GPIO as GPIO
+import OPi.GPIO as GPIO
 import sys,time 
 import os
 
-GPIO.setmode(GPIO.BCM)
+GPIO.setmode(GPIO.BOARD)
 GPIO.setwarnings(False)
 
 delay = 0.0001

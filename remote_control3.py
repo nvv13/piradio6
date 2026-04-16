@@ -30,7 +30,7 @@
 #
 # NOTE Will not run on Bullseye due to bug https://sourceforge.net/p/lirc/tickets/341/
 
-import RPi.GPIO as GPIO
+import OPi.GPIO as GPIO
 import configparser
 import sys
 import pwd
@@ -120,7 +120,7 @@ class RemoteDaemon(Daemon):
         if remote_led > 0:
             print("Flashing LED on GPIO", remote_led)
             GPIO.setwarnings(False)      # Disable warnings
-            GPIO.setmode(GPIO.BCM)       # Use BCM GPIO numbers
+            GPIO.setmode(GPIO.BOARD)       # Use BCM GPIO numbers
             GPIO.setup(remote_led, GPIO.OUT)  # Output LED
             flash_led(remote_led)
         else:
@@ -161,7 +161,7 @@ class RemoteDaemon(Daemon):
         remote_led = config.remote_led
         if remote_led > 0:
             GPIO.setwarnings(False)      # Disable warnings
-            GPIO.setmode(GPIO.BCM)       # Use BCM GPIO numbers
+            GPIO.setmode(GPIO.BOARD)       # Use BCM GPIO numbers
             GPIO.setup(remote_led, GPIO.OUT)  # Output LED
             flash_led(remote_led)
         return

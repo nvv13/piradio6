@@ -30,7 +30,7 @@
 
 import epdif
 import Image
-import RPi.GPIO as GPIO
+import OPi.GPIO as GPIO
 
 # Display resolution
 EPD_WIDTH       = 128

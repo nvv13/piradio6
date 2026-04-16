@@ -14,12 +14,12 @@
 
 import os,sys
 import time
-import RPi.GPIO as GPIO
+import OPi.GPIO as GPIO
 import threading
 import pdb
 from constants import *
 
-GPIO.setmode(GPIO.BCM)
+GPIO.setmode(GPIO.BOARD)
 
 class Button:
 

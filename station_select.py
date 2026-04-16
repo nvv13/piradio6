@@ -15,14 +15,14 @@
 
 import os,sys
 import time
-import RPi.GPIO as GPIO
+import OPi.GPIO as GPIO
 import threading
 import pdb
 import signal
 from constants import *
 from button_class import Button
 
-GPIO.setmode(GPIO.BCM)
+GPIO.setmode(GPIO.BOARD)
 from config_class import Configuration
 config = Configuration()
 

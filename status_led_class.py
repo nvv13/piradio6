@@ -9,7 +9,7 @@
 # License: GNU V3, See https://www.gnu.org/copyleft/gpl.html
 #
 
-import RPi.GPIO as GPIO
+import OPi.GPIO as GPIO
 import time
 import sys
 
@@ -40,7 +40,7 @@ class StatusLed:
         self.blue_led = blue_led
 
         # Set up status LEDS
-        GPIO.setmode(GPIO.BCM)
+        GPIO.setmode(GPIO.BOARD)
         GPIO.setwarnings(False)
         if self.red_led > 0:
             GPIO.setup(self.red_led, GPIO.OUT)

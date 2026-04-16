@@ -23,7 +23,7 @@
 
 import os,sys,pdb
 import time,pwd
-import RPi.GPIO as GPIO
+import OPi.GPIO as GPIO
 from config_class import Configuration
 
 # The wiring for the LCD is as follows:
@@ -129,7 +129,7 @@ class Lcd:
 
         # LCD outputs
         GPIO.setwarnings(False)      # Disable warnings
-        GPIO.setmode(GPIO.BCM)       # Use BCM GPIO numbers
+        GPIO.setmode(GPIO.BOARD)       # Use BCM GPIO numbers
 
         # Check that every LCD pin has been assigned a non-zero value
         self.lcd_configured = True 

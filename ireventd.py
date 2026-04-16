@@ -20,7 +20,7 @@
 # This class is calls the ir_daemon.py class to daemonize this process
 # It is normally called from ireventd.service
 
-import RPi.GPIO as GPIO
+import OPi.GPIO as GPIO
 import configparser
 import sys
 import pwd
@@ -52,7 +52,7 @@ key_maps = '/etc/rc_keymaps'
 sys_rc = '/sys/class/rc'
 rc_device = ''
 
-GPIO.setmode(GPIO.BCM)
+GPIO.setmode(GPIO.BOARD)
 GPIO.setwarnings(False)      # Disable warnings
 
 recording = False
@@ -105,12 +105,13 @@ class RemoteDaemon(Daemon):
         remote_led = config.remote_led
         if remote_led > 0:
             print("Flashing LED on GPIO", remote_led)
+            GPIO.setmode(GPIO.BOARD)
             GPIO.setup(remote_led, GPIO.OUT)  # Output LED
             self.flash_led(remote_led)
         else:
             log.message("Remote control LED disabled", log.DEBUG)
 
-        self.ir_device = self.get_ir_device('gpio_ir_recv')
+        self.ir_device = self.get_ir_device('sunxi-ir')
 
         print("Using device /sys/class/rc/" + self.ir_device)
 
@@ -119,7 +120,7 @@ class RemoteDaemon(Daemon):
         log.message("UDP connect host " + udphost + " port " + str(udpport), log.DEBUG)
 
         devices = [InputDevice(path) for path in list_devices()]
-        #print("DEBUG " + str(devices))
+        print("DEBUG " + str(devices))
 
         self.keytable = config.keytable 
         self.loadKeyTable(self.keytable)
@@ -128,7 +129,7 @@ class RemoteDaemon(Daemon):
         irin = None
         for device in devices:
             print(device.path, device.name, device.phys)
-            if(device.name=="gpio_ir_recv"):
+            if(device.name=="sunxi-ir"):
                 irin = device
 
         if(irin == None):
@@ -360,7 +361,7 @@ def usageSend():
 
 # get gpio-ir dtoverlay configuration and port configuration
 def getBootConfig(str):
-    file = "/boot/config.txt"
+    file = "/boot/orangepiEvn.txt"
     if os.path.exists("/boot/firmware/config.txt"):      
         file = "/boot/firmware/config.txt"
 
@@ -381,18 +382,18 @@ def displayConfiguration():
     print("HOST = " + config.remote_control_host)
     print("PORT = " + str(config.remote_control_port))
     print("LISTEN = " + str(config.remote_control_port))
-    line = getBootConfig("^dtoverlay=gpio-ir")
+    line = getBootConfig("^dtoverlay=ir")
     if line != None:
         print(line.rstrip())
 
-    mods = execCommand("lsmod | grep -i gpio_ir_recv")
+    mods = execCommand("lsmod | grep -i sunxi_cir")
     if len(mods) > 0:
         x = mods.split(' ')
         print ("Module %s loaded" % x[0])
     else:
-        print ("ERROR: Module gpio_ir_recv not loaded, missing gpio-ir overlay")
+        print ("ERROR: Module sunxi_cir not loaded, missing ir overlay")
 
-    daemon.get_ir_device('gpio_ir_recv')
+    daemon.get_ir_device('sunxi-ir')
     print('Sysfs: ' + rc_device)
    
     protos = execCommand("cat " + rc_device + '/protocols')

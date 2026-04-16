@@ -22,9 +22,9 @@ import colorsys
 import ioexpander as io
 import threading
 import pdb
-import RPi.GPIO as GPIO
+import OPi.GPIO as GPIO
 
-GPIO.setmode(GPIO.BCM)
+GPIO.setmode(GPIO.BOARD)
 I2C_ADDR = 0x1F  # 0x18 for IO Expander, 0x1F for the encoder breakout
 
 PIN_RED = 1

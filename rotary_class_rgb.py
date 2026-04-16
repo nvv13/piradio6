@@ -74,7 +74,7 @@
 
 import os,sys,pwd
 import time
-import RPi.GPIO as GPIO
+import OPi.GPIO as GPIO
 
 R_CCW_BEGIN   = 0x1
 R_CW_BEGIN    = 0x2
@@ -164,7 +164,7 @@ class RotaryEncoderRgb:
         self.callback = callback
         self.pullup = pullup
 
-        GPIO.setmode(GPIO.BCM)
+        GPIO.setmode(GPIO.BOARD)
         GPIO.setwarnings(False)
 
         try:

@@ -20,7 +20,7 @@ import sh1106_config
 import traceback
 from sh1106_class import SH1106
 
-import RPi.GPIO as GPIO
+import OPi.GPIO as GPIO
 
 import time
 import subprocess
@@ -57,7 +57,7 @@ disp.clear()
 # for P4:
 # sudo vi /boot/config.txt
 # gpio=6,19,5,26,13,21,20,16=pu
-GPIO.setmode(GPIO.BCM) 
+GPIO.setmode(GPIO.BOARD) 
 GPIO.setup(KEY_UP_PIN,      GPIO.IN, pull_up_down=GPIO.PUD_UP)    # Input with pull-up
 GPIO.setup(KEY_DOWN_PIN,    GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Input with pull-up
 GPIO.setup(KEY_LEFT_PIN,    GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Input with pull-up

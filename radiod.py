@@ -21,7 +21,8 @@ import socket
 import datetime
 import subprocess
 from time import strftime
-import RPi.GPIO as GPIO
+#import OPi.GPIO as GPIO
+import OPi.GPIO as GPIO
 
 import pdb
 # To set break-point: pdb.set_trace()
@@ -176,11 +177,11 @@ class MyDaemon(Daemon):
         global statusLed
         global newMenu
 
-        event = Event(config) # Must be initialised here
 
         # Set up radio
         if config.log_creation_mode:
             log.truncate()
+        event = Event(config) # Must be initialised here
         log.message("===== Starting radio =====",log.INFO)
         radio = Radio(menu,event,translate,config,log)
         message = Message(radio,display,translate)
@@ -333,6 +334,7 @@ class MyDaemon(Daemon):
                 # This delay is important. Don't remove or
                 # button/encoder events will be missed
                 time.sleep(0.025)
+                #time.sleep(0.125)
 
             except KeyboardInterrupt:
                 print ("Stopped")

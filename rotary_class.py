@@ -73,7 +73,7 @@
 
 import os,sys,pwd
 import time
-import RPi.GPIO as GPIO
+import OPi.GPIO as GPIO
 import threading
 import pdb
 
@@ -173,7 +173,7 @@ class RotaryEncoder:
         self.callback = callback
         self.pullup = pullup
 
-        GPIO.setmode(GPIO.BCM)
+        GPIO.setmode(GPIO.BOARD)
         GPIO.setwarnings(False)
 
         try:

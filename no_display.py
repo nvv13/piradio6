@@ -16,7 +16,7 @@
 
 import os,sys
 import time,pwd
-import RPi.GPIO as GPIO
+import OPi.GPIO as GPIO
 from translate_class import Translate
 from config_class import Configuration
 

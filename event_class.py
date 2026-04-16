@@ -26,7 +26,7 @@ from rotary_class_rgb import RotaryEncoderRgb
 from log_class import Log
 from constants import *
 from rotary_switch_class import RotarySwitch
-import RPi.GPIO as GPIO
+import OPi.GPIO as GPIO
 import pdb
 
 log = Log()
@@ -141,6 +141,7 @@ class Event():
     def __init__(self,config):
         self.config = config
         log.init('radio')
+        log.message("event_class_init", log.DEBUG)
         self.getConfiguration()
         self.setInterface()
         self.setupRotarySwitch()
@@ -150,7 +151,7 @@ class Event():
     # Call back routine for the volume control knob
     def volume_event(self,event):
         global volumeknob
-        self.event_type = self.NO_EVENT
+        self.event_type = self.NO_EVENT 
 
         encoderEventName = self.getEncoderEventName(event)
         log.message("Volume event:" + str(event) + ' ' + encoderEventName, log.DEBUG)
