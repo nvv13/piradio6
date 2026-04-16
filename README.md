@@ -266,9 +266,11 @@ GPIO.setmode(GPIO.BOARD)
 теперь это соответствует контактам на 40 пин разьеме, в конфиге указал
 
 во всех файлах поменял
+~~~
 find . -type f -name "*.py" -exec sed -i 's/GPIO\.setmode(GPIO\.BCM)/GPIO.setmode(GPIO.BOARD)/g' {} \;
+~~~
 
-
+~~~
 # Set the user interface to 'buttons' or 'rotary_encoder' or 'graphical'
 # These can also be used in conjunction with a graphical/touchscreen display
 user_interface=rotary_encoder
@@ -280,8 +282,10 @@ up_switch=37
 down_switch=36
 left_switch=31
 right_switch=32
+~~~
 
 что соответств (1 колонка № контакта на 40 пин разьеме)
+~~~
 29 Mute volKnob Switch (SW)
 31 Volume up/down Output A 
 32 Volume up/down Output B (DT)
@@ -289,7 +293,7 @@ right_switch=32
 33 Menu swiKnob Switch (SW)
 36 Channel Output A (CLK)
 37 Channel Output B (DT)
-
+~~~
 
 
 6********
