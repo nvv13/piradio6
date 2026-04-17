@@ -171,10 +171,9 @@ H_I2S3_DIN0   -> PH9 -> 26
 
 включаем i2s3
 
+берем файл sun50i-h616-i2s3_v2.dts из проекта [Opi_Zero_3_I2S3_6.1](https://github.com/elkoni/Opi_Zero_3_I2S3_6.1)
 
-берем файл sun50i-h616-i2s3_v2.dts
-
-добавляем, комманда:
+и добавляем его, комманда:
 ~~~
 # orangepi-add-overlay /usr/share/radio/device/Opi_Zero_3_I2S3_6.1/sun50i-h616-i2s3_v2.dts
 ~~~
