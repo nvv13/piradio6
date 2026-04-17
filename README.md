@@ -8,11 +8,242 @@ Internet Radio for Orange Pi Zero 2w adopted from Raspberry Pi code
 
 This is a quick and dirty adaptation of code, done with the help of AI.
 
-Thanks to Bob Rathbone for his project.
+## Thanks to Bob Rathbone for his [project](https://github.com/bobrathbone/piradio6).
+
+
+-------------------------------
+
+
+## 1) выбор дистрибутива
+
+я попробовал несколько, для наших целей наиболее удачный, Ububtu Server - kernel 6.1.31
+
+переходим по ссылке
+
+[Orange-Pi-Zero-2W](http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/service-and-support/Orange-Pi-Zero-2W.html)
+
+выбираем Ububtu Image - кнопка [download](https://drive.google.com/drive/folders/1g806xyPnVFyM8Dz_6wAWeoTzaDg3PH4Z)
+
+скачиваем "Linux6.1 kernel version image" 
+
+скачаеться несколько архивов вида "Linux6.1 kernel version image-20260417T054039Z-3-ХХХ.zip" - 6 архивов 001-006
+
+в них находим нужный нам образ, server для оперативной памяти 1-2 гигабайт, если же у вас платка на 4 гига, то соответствующий 
+
+-------------------------------
+
+
+## 2) переводим OS на запуск с внешней USB Flash
+
+Записываем на microSD, загружаемся, поднимаем сеть, далее из под root:
+
+~~~
+apt update && sudo apt upgrade -y
+reboot
+~~~
+
+После прерзагрузки - проверяем SPI flash:
+~~~
+cat /proc/mtd
+#должно быть что то такое:
+dev:    size   erasesize  name
+mtd0: 00200000 00001000 "spi0.0"
+~~~
+
+вторая проверка:
+~~~
+ls -l /dev/mtd*
+#должно быть что то такое:
+crw------- 1 root root 90, 0 Apr 17 19:34 /dev/mtd0 
+crw------- 1 root root 90, 1 Apr 17 19:34 /dev/mtd0ro 
+brw-rw---- 1 root disk 31, 0 Apr 17 19:34 /dev/mtdblock0
+
+/dev/mtd/
+total 0 
+drwxr-xr-x 2 root root 60 Apr 17 19:34 by-name
+~~~
+
+Если вы видите /dev/mtd0 или /dev/mtd/by-name/spi0.0, то можно сделать U-Boot образ и записать на SPI flash.
+
+Сначала делаем пустой образ
+~~~
+dd if=/dev/zero count=2048 bs=1K | tr '\000' '\377' > spi.img
+~~~
+
+потом, записываем в него U-Boot
+~~~
+dd if=/usr/lib/linux-u-boot-next-orangepizero2w_1.0.4_arm64/u-boot-sunxi-with-spl.bin of=spi.img bs=1k conv=notrunc
+~~~
+
+установим mtd-utils
+~~~
+apt install mtd-utils
+~~~
+
+сохраним flash на всякий
+~~~
+dd if=/dev/mtd0 of=spi_orig.img bs=1K
+~~~
+
+Запишем image в SPI-Flash
+~~~
+flashcp -v spi.img /dev/mtd0 
+~~~
+
+
+Далее подключаем USB-Flash, либо ещё можно SSD по USB,
+подключаеться это всё в type-c порт, что рядом с портом питания, - через USB Хаб,
+(я пробовал подключать в порты USB платы расширения - там не работает загрузка!)
+
+запускаем
+~~~
+nand-sata-install
+~~~
+
+выбираем там 2 пункт вроде, что то про MTD(SPI) и USB загрузку
+
+скрипт nand-sata-install всё сделает, потом предложит выключить 
+- выключаемся и вынимаем microSD карту...
+
+включаем, запуск происходит с USB устройства!
+
+-------------------------------
 
 
 
+## 3) подключаем внешний DAC по шине I2S, тестируем
 
+
+
+как я понял, нам нужен i2s3
+
+i2s3 - можно использоватьчерез контакты
+~~~
+      40 pin connector
+H_I2S3_MCLK   -> PH5 -> 24 
+H_I2S3_BCLK   -> PH6 -> 23
+H_I2S3_LRCK   -> PH7 -> 19
+H_I2S3_DOUT0  -> PH8 -> 21
+H_I2S3_DIN0   -> PH9 -> 26
+~~~
+
+![photo](jpg/OrangePiZero2wPinout.jpg)
+
+например для PCM5102a
+~~~
+|I2S DAC    | 40 pin connector Orange Pi Zero 2w
+-------------------------------------------------
+|FSCLK(LRCK) - 19
+|DATA (DIN)  - 21
+|BCLK (BCK)  - 23
+|gnd         - 25(gnd)
+|5V          - 2 (5V)
+-------------------------------------------------
+~~~
+
+1) включаем i2s3
+
+
+из проекта [Opi_Zero_3_I2S3_6.1](https://github.com/elkoni/Opi_Zero_3_I2S3_6.1)
+
+[или отсюда](device/Opi_Zero_3_I2S3_6.1)
+
+берем файл sun50i-h616-i2s3_v2.dts
+
+добавляем, комманда:
+~~~
+# orangepi-add-overlay sun50i-h616-i2s3_v2.dts
+~~~
+
+в файле 
+
+/boot/orangepiEnv.txt
+
+должна появится строчка
+
+user_overlays=sun50i-h616-i2s3_v2
+
+
+далее
+
+$ alsamixer
+
+настроить вход миксера как на картинке
+
+![photo](jpg/alsamixer1.jpg)
+
+тест
+~~~
+$ aplay -D hw:1,0 /usr/share/sounds/alsa/audio.wav
+~~~
+
+
+-------------------------------
+
+
+## 4) установка mpd и mpc, настройка, тест
+
+~~~
+apt install mpd mpc
+~~~
+
+mpd включаем в автозагрузку
+~~~
+systemctl enabled mpd
+~~~
+
+и в его файлике настроек /etc/mpd.conf прописываем audio выход
+
+вида (device указываем тот который определили)
+~~~
+audio_output {
+	type		"alsa"
+	name		"My ALSA Device"
+	device		"hw:1,0"	
+	mixer_type	"software"	
+
+если звук "заторможен" то добавить (это даже сработало для 32 битной карты, драйвер наверно?) мне пришлось добавить
+    format        "44100:16:2"      # <--- РЕШЕНИЕ: Явно задаем частоту 44.1 кГц, 16 бит, стерео
+    auto_resample "no"              # Отключаем авто-передискретизацию
+    auto_format   "no"              # Отключаем авто-подбор формата
+
+~~~
+
+запускаем mpd
+~~~
+systemctl start mpd
+~~~
+
+загружаем playlist
+
+допустим это файл Radio.m3u - по формату это то же что использует проигрыватель WinAmp 
+
+ложим его в директорию /var/lib/mpd/playlists
+
+грузим
+~~~
+mpc load Radio
+~~~
+
+играем 1 станцию
+~~~
+mpc play 1 
+~~~
+
+
+-------------------------------
+
+
+## 5) начальный конфиг, подключение дисплея по i2c, энкодеров, ir-датчик
+
+
+-------------------------------
+
+
+## 6) установка Bob Rathbone радио с изменениями для Orange Pi Zero 2w, настройка...
+
+
+-------------------------------
 
 
 
