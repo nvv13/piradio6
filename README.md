@@ -20,7 +20,9 @@ LCD1602+i2c адаптер,
 
 ir-датчик (на плате расширения), 
 
-DAC на i2s например PCM5102a или "es9038q2m Rod Rain Audio" 
+DAC на i2s например PCM5102a 
+
+ или "es9038q2m Rod Rain Audio" (как на фото)
 
 ![photo](jpg/radio_ver1.jpg)
 -------------------------------
