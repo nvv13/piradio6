@@ -111,16 +111,22 @@ nand-sata-install
 
 -------------------------------
 
+
+## 3) загрузка исходников
+
+после перезапуска
 ~~~
 sudo -i
-apt install git
+apt install git -y
 git clone https://github.com/nvv13/piradio6.git
 mv ~/piradio6 /usr/share/radio
 ~~~
 
+-------------------------------
 
 
-## 3) подключаем внешний DAC по шине I2S, тестируем
+
+## 4) подключаем внешний DAC по шине I2S, тестируем
 
 
 
@@ -153,15 +159,11 @@ H_I2S3_DIN0   -> PH9 -> 26
 включаем i2s3
 
 
-из проекта [Opi_Zero_3_I2S3_6.1](https://github.com/elkoni/Opi_Zero_3_I2S3_6.1)
-
-[или отсюда](device/Opi_Zero_3_I2S3_6.1)
-
 берем файл sun50i-h616-i2s3_v2.dts
 
 добавляем, комманда:
 ~~~
-# orangepi-add-overlay sun50i-h616-i2s3_v2.dts
+# orangepi-add-overlay /usr/share/radio/device/Opi_Zero_3_I2S3_6.1/sun50i-h616-i2s3_v2.dts
 ~~~
 
 в файле 
@@ -177,13 +179,17 @@ user_overlays=sun50i-h616-i2s3_v2
 reboot
 ~~~
 
-далее
+далее (не под root)
 
 ~~~
 alsamixer
 ~~~
 
-настроить вход миксера как на картинке
+настроить вход миксера как на картинке (нажимаем F6 - выбираем звуковую карту ahubdam, далее - 
+три раза стрелкой вправо, будет "Item: I2S3 Src select [NONE]",
+жмём три раза стрелкой вверх, будет  "Item: I2S3 Src select [APBIF_TXTIF2]",
+как на картинке,
+нажимаем кнопку Esc)
 
 ![photo](jpg/alsamixer1.jpg)
 
@@ -198,16 +204,22 @@ aplay -D hw:1,0 /usr/share/sounds/alsa/audio.wav
 
 ## 4) установка mpd и mpc, настройка, тест
 
+
 ~~~
+sudo -i
 apt install mpd mpc
 ~~~
 
 mpd включаем в автозагрузку
 ~~~
-systemctl enabled mpd
+systemctl enable mpd
 ~~~
 
 и в его файлике настроек /etc/mpd.conf прописываем audio выход
+
+можно скопировать готовый файл 
+
+cp -f /usr/share/radio/mpd.conf /etc
 
 вида (device указываем тот который определили)
 ~~~
@@ -224,6 +236,7 @@ audio_output {
 
 ~~~
 
+
 запускаем mpd
 ~~~
 systemctl start mpd
@@ -234,6 +247,8 @@ systemctl start mpd
 допустим это файл Radio.m3u - по формату это то же что использует проигрыватель WinAmp 
 
 ложим его в директорию /var/lib/mpd/playlists
+
+echo -e '#EXTM3U\n#EXTINF:-1,Classic FM UK\nhttp://ice-the.musicradio.com/ClassicFMMP3\n' > /var/lib/mpd/playlists/Radio.m3u
 
 грузим
 ~~~
@@ -251,6 +266,72 @@ mpc play 1
 
 ## 5) начальный конфиг, подключение дисплея по i2c, энкодеров, ir-датчик
 
+~~~
+sudo -i
+chmod +x /usr/share/radio/radiod.py
+cp /usr/share/radio/radiod.service /usr/lib/systemd/system
+systemctl enable radiod
+apt install pip -y
+pip install OPi.GPIO-ex --break-system-packages
+mkdir /var/log/radiod/
+cp -f /usr/share/radio/radiod.conf /etc
+~~~
+
+~~~
+orangepi-config
+~~~
+Выберите System -> Hardware.
+
+Стрелками дойдите до строки ir,
+Нажмите Пробел, чтобы поставить галочку (включить).
+
+Стрелками дойдите до строки pi-i2c1,
+Нажмите Пробел, чтобы поставить галочку (включить).
+
+Нажмите Save, затем Reboot, чтобы перезагрузить плату .
+
+если галочки "не ставятся", просто добавте в файл
+
+/boot/orangepiEnv.txt
+
+строку
+~~~
+overlays=ir pi-i2c1
+~~~
+
+~~~
+reboot
+~~~
+
+подключаем дисплей I2C к пинам 3 (SDA) и 5 (SCL)
+
+Чтобы убедиться, что I2C работает на этих пинах, выполните в терминале:
+
+~~~
+sudo -i
+apt install -y i2c-tools
+~~~
+
+~~~
+cat /sys/kernel/debug/pinctrl/300b000.pinctrl/pinmux-pins | grep -E "i2c1"
+# увидим такое
+pin 263 (PI7): device 5002400.i2c function i2c1 group PI7
+pin 264 (PI8): device 5002400.i2c function i2c1 group PI8
+
+~~~
+
+~~~
+i2cdetect -l
+~~~
+
+Проверьте шину 2 (именно она соответствует 3 и 5 пинам):
+~~~
+i2cdetect -y 2
+~~~
+
+Если вы увидите адреса (например, 0x27 для OLED-экрана), значит всё настроено верно.
+
+
 
 -------------------------------
 
@@ -260,161 +341,6 @@ mpc play 1
 
 -------------------------------
 
-
-
-1********
-
-
-Шаг 2: Установите Python-библиотеку глобально
-
-Теперь установите саму библиотеку OPi.GPIO-ex с помощью pip3, но без использования виртуального окружения. Флаг --break-system-packages может потребоваться в новых версиях Debian/Ubuntu (на которых основаны ОС для Orange Pi), чтобы разрешить глобальную установку.
-
-Выполните одну из следующих команд:
-
-Вариант А (предпочтительный для новых систем):
-
-
-sudo pip3 install OPi.GPIO-ex --break-system-packages
-
-
-*
-Важные замечания про глобальную установку
-
-Права доступа: Как уже было сказано, скрипт почти наверняка придется запускать с sudo. Это нормально для работы с GPIO на Orange Pi.
-
-Конфликт версий: Глобальная установка — это самый простой способ "для всего", но он может привести к конфликтам, если у вас есть разные проекты, которым нужны разные версии одной и той же библиотеки. Для серьезных проектов лучше использовать виртуальные окружения (как было описано в прошлом ответе), но тогда и запуск будет чуть сложнее: sudo /путь/к/venv/bin/python3 script.py.
-
-
-Обновление библиотеки: Чтобы обновить глобально установленную библиотеку до последней версии, используйте:
-
-sudo pip3 install --upgrade OPi.GPIO-ex --break-system-packages
-
-Этот метод позволит вам использовать OPi.GPIO в любом скрипте на вашем Orange Pi, просто импортировав его и запустив с sudo.
-
-1********
-
-2********
-
-Вот несколько способов заменить эту строку во всех файлах в текущей директории (и поддиректориях):
-
-Способ 1: sed + find (самый надёжный)
-
-Эта команда найдёт все .py файлы и заменит строку:
-
-bash
-
-find . -type f -name "*.py" -exec sed -i 's/import RPi\.GPIO as GPIO/import OPi.GPIO as GPIO/g' {} \;
-
-Пояснение:
-
-find . - ищет в текущей директории и всех поддиректориях
-
--type f - только файлы
-
--name "*.py" - только файлы с расширением .py
-
--exec sed -i 's/.../.../g' {} \; - выполняет замену в каждом найденном файле
-
-
-2********
-
-3********
-
-i2c на пинах 3 и 5 Raspberi PI
-
-чему соответствует для Orange pi zero 2w
-
-На Orange Pi Zero 2W пины 3 и 5, которые на Raspberry Pi используются для шины I2C1 (SDA/SCL), соответствуют другой шине I2C и другим физическим выводам. Вам нужно будет переподключить ваше устройство.
-
-Вот точное соответствие:
-
-🧐 Сравнение распиновки: Raspberry Pi vs Orange Pi Zero 2W
-Номер пиФункция на плате (СигналФункция в системНомер GPIO (для кода)
-RaspberrSDA (I2CGPIO 2
-RaspberrSCL (I2CGPIO 3
-Orange Pi Zero 2TWI1-SDAPI8 (GPIO 264) 
-Orange Pi Zero 2TWI1-SCLPI7 (GPIO 263) 
-Таблица физических пинов: TWI1-SDA и TWI1-SCL — это названия на самой плате для I2C1 .
-
-Таблица системных функций: i2c1 — это название драйвера в Linux, соответствующий этой паре пинов .
-
-💡 Что это значит для вас и ваших действий
-Для скетчей/скриптов: Хотя в коде вы также будете обращаться к /dev/i2c-1 (как и на Raspberry Pi), в некоторых библиотеках на Orange Pi может потребоваться указать номера GPIO (PI8, PI7) вместо стандартных 2 и 3. Это зависит от используемой библиотеки OPi.GPIO.
-
-Для подключения: Если у вас есть переходник или шлейф, разработанный для Raspberry Pi, он не будет работать на Orange Pi без переделки, так как расположение сигналов I2C на 3 и 5 пинах физически другое.
-
-Рекомендация: Для упрощения жизни всегда старайтесь подключать I2C-устройства к пинам 3 (SDA) и 5 (SCL) вашего Orange Pi — они уже настроены на I2C1 в большинстве готовых образов систем. Это будет наиболее близким аналогом Raspberry Pi.
-
-🔧 Проверка и активация I2C
-Чтобы убедиться, что I2C работает на этих пинах, выполните в терминале:
-
-Установите инструменты (если не установлены):
-
-bash
-sudo apt update && sudo apt install -y i2c-tools
-Проверьте шину 1 (именно она соответствует 3 и 5 пинам):
-
-bash
-sudo i2cdetect -y 1
-Если вы увидите адреса (например, 0x3c для OLED-экрана), значит всё настроено верно.
-
-Если шина i2c-1 не отображается, её нужно включить. На Orange Pi это делается через специальный конфигуратор:
-
-bash
-sudo orangepi-config
-Выберите System -> Hardware.
-
-Стрелками дойдите до строки pi-i2c1
-Нажмите Пробел, чтобы поставить галочку (включить).
-Нажмите Save, затем Reboot, чтобы перезагрузить плату .
-
-это соответствует orangepiEnv.txt
-overlays=pi-i2c1
-
-
-
-
-root@orangepizero2w:~# i2cdetect -l
-i2c     mv64xxx_i2c adapter     I2C adapter
-i2c     DesignWare HDMI         I2C adapter
-i2c     mv64xxx_i2c adapter     I2C adapter
-i2c     mv64xxx_i2c adapter     I2C adapter
-root@orangepizero2w:~#
-
-root@orangepizero2w:~# sudo cat /sys/kernel/debug/pinctrl/300b000.pinctrl/pinmux-pins | grep -E "i2c"
-pin 10 (PA10): device 5002c00.i2c function i2c3 group PA10
-pin 11 (PA11): device 5002c00.i2c function i2c3 group PA11
-pin 263 (PI7): device 5002400.i2c function i2c1 group PI7
-pin 264 (PI8): device 5002400.i2c function i2c1 group PI8
-root@orangepizero2w:~#
-
-!!!
-/etc/radiod.conf
-i2bus=2
-
-
-!!!
-/usr/lib/systemd/system/radiod.service
-расскоментировать
-Restart=on-failure
-RestartSec=5s
-!!!иногда возникает ошибка из-за неготовности шины i2c!!!
-
-
-
-3********
-
-4********
-
-перепроверить /etc/mpd.conf
-поправить
-
-/etc/radiod.conf
-audio_config_locked=yes
-
-поправить
-
-4********
 
 5********
 
