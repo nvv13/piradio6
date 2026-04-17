@@ -202,7 +202,7 @@ aplay -D hw:1,0 /usr/share/sounds/alsa/audio.wav
 -------------------------------
 
 
-## 4) установка mpd и mpc, настройка, тест
+## 5) установка mpd и mpc, настройка, тест
 
 
 ~~~
@@ -221,7 +221,7 @@ systemctl enable mpd
 
 cp -f /usr/share/radio/mpd.conf /etc
 
-вида (device указываем тот который определили)
+там будут настройки вида (device указываем тот который определили)
 ~~~
 audio_output {
 	type		"alsa"
@@ -248,7 +248,14 @@ systemctl start mpd
 
 ложим его в директорию /var/lib/mpd/playlists
 
-echo -e '#EXTM3U\n#EXTINF:-1,Classic FM UK\nhttp://ice-the.musicradio.com/ClassicFMMP3\n' > /var/lib/mpd/playlists/Radio.m3u
+создать и добавить 4 станции
+~~~
+echo -e '#EXTM3U\n#EXTINF:-1,Classic FM UK\nhttp://ice-the.musicradio.com/ClassicFMMP3' > /var/lib/mpd/playlists/Radio.m3u
+echo -e '#EXTM3U\n#EXTINF:-1,BDPST ROCK Rádió (FLAC)\nhttp://s2.audiostream.hu:8091/bdpstrock_FLAC' >> /var/lib/mpd/playlists/Radio.m3u
+echo -e '#EXTM3U\n#EXTINF:-1,relaxing-piano\nhttp://relaxing-piano.stream.laut.fm/relaxing-piano' >> /var/lib/mpd/playlists/Radio.m3u
+echo -e '#EXTM3U\n#EXTINF:-1,Sector SPACE (flac)\nhttp://89.223.45.5:8000/space-flac' >> /var/lib/mpd/playlists/Radio.m3u
+~~~
+
 
 грузим
 ~~~
@@ -264,19 +271,17 @@ mpc play 1
 -------------------------------
 
 
-## 5) начальный конфиг, подключение дисплея по i2c, энкодеров, ir-датчик
+## 6) начальный конфиг, подключение дисплея по i2c, энкодеров, ir-датчик
 
 ~~~
 sudo -i
-chmod +x /usr/share/radio/radiod.py
-cp /usr/share/radio/radiod.service /usr/lib/systemd/system
-systemctl enable radiod
 apt install pip -y
 pip install OPi.GPIO-ex --break-system-packages
 mkdir /var/log/radiod/
 cp -f /usr/share/radio/radiod.conf /etc
 ~~~
 
+включаем i2c и ir
 ~~~
 orangepi-config
 ~~~
@@ -350,6 +355,7 @@ i2cdetect -y 2
 |+5v			- 3,3v Внимание! 3,3 вольт
 --------------------------------------------------
 ~~~
+
 ~~~
 |Menu swiKnob Switch| 40 pin connector Orange Pi Zero 2w
 --------------------------------------------------
@@ -364,6 +370,7 @@ i2cdetect -y 2
 
 для управления с пульта, ставим
 ~~~
+sudo -i
 apt install ir-keytable
 ~~~
 
@@ -372,141 +379,56 @@ apt install ir-keytable
 ir-keytable -c -p NEC -t
 ~~~
 
+копируем наш пульт (описание)
+~~~
+cp /usr/share/radio/device/myremote.toml /etc/rc_keymaps
+~~~
 
--------------------------------
-
-
-## 6) установка Bob Rathbone радио с изменениями для Orange Pi Zero 2w, настройка...
-
-
--------------------------------
-
-
-5********
-
-sudo orangepi-config
-Выберите System -> Hardware.
-
-Стрелками дойдите до строки ir
-Нажмите Пробел, чтобы поставить галочку (включить).
-Нажмите Save, затем Reboot, чтобы перезагрузить плату .
-
-orangepiEnv.txt уже будет
-overlays=ir pi-i2c1
-
-после перезагрузки, проверяем
-root@orangepizero2w:/boot# ls -la /dev/lirc*
-crw-rw---- 1 root video 243, 0 Apr 10 14:08 /dev/lirc0
-root@orangepizero2w:/boot# 
-
-далее
-apt install evtest
-
-для теста кнопок на пульте, или 
-root@orangepizero2w:~# cat /dev/lirc0
-
-
-
-apt install lirc -y
-
-/etc/lirc/lirc_options.conf надо
-driver = default
-device = /dev/lirc0
-
-
-sudo systemctl restart lircd
-
-
-Проверьте сырой сигнал с приемника:
-sudo mode2 -d /dev/lirc0
-
-# Проверьте, запущен ли процесс lircd
-ps aux | grep lircd
-
-# Проверьте, какие файлы открыл процесс
-sudo lsof -p $(cat /var/run/lirc/lircd.pid) 2>/dev/null | grep -E "lirc|sock"
-
-output = /run/lirc/lircd
-
-все с 
-systemctl disable lircd
----
-
-ставим
-apt install ir-keytable triggerhappy
-
-проверка, нажимаем на лентяйку
-sudo ir-keytable -c -p NEC -t
-
-лучьше так
- табл лентяйки
-sudo nano /etc/rc_keymaps/myremote.toml
  грузим
-sudo ir-keytable -c -w /etc/rc_keymaps/my_remote.toml
+~~~
+ir-keytable -c -w /etc/rc_keymaps/myremote.toml
+~~~
+
  тест сразу с названиям клавиш
-sudo ir-keytable -t
+~~~
+ir-keytable -t
+~~~
 
-
-
+~~~
 apt install python3-evdev -y
+chmod +x /usr/share/radio/ireventd.py
+~~~
 
-/usr/share/radio/ireventd.py
-поменял gpio_ir_reciv на sunxi-ir
-
-а где то на sunxi_cir
-
-+добавил
-GPIO.setmode(GPIO.BOARD)
-перед установки режима OUT для remote_led
-теперь это соответствует контактам на 40 пин разьеме, в конфиге указал
-remote_led=12
-
+через резистор, подключаем светодиод - индикатор на 12 пин 40 пин разьема
 
 далее включил и запустил сервис ireventd
 
-
-5********
-
-6********
-
-rotary_class.py
-
-поменять
-GPIO.setmode(GPIO.BCM)
-на
-GPIO.setmode(GPIO.BOARD)
-теперь это соответствует контактам на 40 пин разьеме, в конфиге указал
-
-во всех файлах поменял
 ~~~
-find . -type f -name "*.py" -exec sed -i 's/GPIO\.setmode(GPIO\.BCM)/GPIO.setmode(GPIO.BOARD)/g' {} \;
-~~~
-
-~~~
-# Set the user interface to 'buttons' or 'rotary_encoder' or 'graphical'
-# These can also be used in conjunction with a graphical/touchscreen display
-user_interface=rotary_encoder
-
-# Switch settings for Rotary encoders or buttons
-menu_switch=33
-mute_switch=29
-up_switch=37
-down_switch=36
-left_switch=31
-right_switch=32
-~~~
-
-что соответств (1 колонка № контакта на 40 пин разьеме)
-~~~
-29 Mute volKnob Switch (SW)
-31 Volume up/down Output A 
-32 Volume up/down Output B (DT)
-
-33 Menu swiKnob Switch (SW)
-36 Channel Output A (CLK)
-37 Channel Output B (DT)
+cp /usr/share/radio/ireventd.service /usr/lib/systemd/system
+systemctl enable ireventd
+systemctl start ireventd
 ~~~
 
 
-6********
+
+-------------------------------
+
+
+## 7) запуск сервиса радио
+
+~~~
+sudo -i
+apt install python3-mpd -y
+chmod +x /usr/share/radio/radiod.py
+cp /usr/share/radio/radiod.service /usr/lib/systemd/system
+systemctl enable radiod
+systemctl start radiod
+~~~
+
+теперь можно перезагрузится, проверить как всё стартует
+
+-------------------------------
+
+
+
 
