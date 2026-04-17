@@ -11,6 +11,7 @@ This is a quick and dirty adaptation of code, done with the help of AI.
 ## Thanks to Bob Rathbone for his [project](https://github.com/bobrathbone/piradio6).
 
 
+![photo](jpg/radio_ver1.jpg)
 -------------------------------
 
 
@@ -129,7 +130,7 @@ H_I2S3_DIN0   -> PH9 -> 26
 
 ![photo](jpg/OrangePiZero2wPinout.jpg)
 
-например для PCM5102a
+например для PCM5102a (я подключал PCM5102a и "es9038q2m Rod Rain Audio", и то и другое работает)
 ~~~
 |I2S DAC    | 40 pin connector Orange Pi Zero 2w
 -------------------------------------------------
