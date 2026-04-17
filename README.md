@@ -141,7 +141,7 @@ H_I2S3_DIN0   -> PH9 -> 26
 -------------------------------------------------
 ~~~
 
-1) включаем i2s3
+включаем i2s3
 
 
 из проекта [Opi_Zero_3_I2S3_6.1](https://github.com/elkoni/Opi_Zero_3_I2S3_6.1)
@@ -163,10 +163,16 @@ H_I2S3_DIN0   -> PH9 -> 26
 
 user_overlays=sun50i-h616-i2s3_v2
 
+перезагружаемся
+~~~
+reboot
+~~~
 
 далее
 
-$ alsamixer
+~~~
+alsamixer
+~~~
 
 настроить вход миксера как на картинке
 
@@ -174,7 +180,7 @@ $ alsamixer
 
 тест
 ~~~
-$ aplay -D hw:1,0 /usr/share/sounds/alsa/audio.wav
+aplay -D hw:1,0 /usr/share/sounds/alsa/audio.wav
 ~~~
 
 
