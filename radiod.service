@@ -8,8 +8,8 @@ After=network.target
 Type=simple
 ExecStart=/usr/share/radio/radiod.py nodaemon
 PIDFile=/run/radiod.pid
-#Restart=on-failure
-#RestartSec=5s
+Restart=on-failure
+RestartSec=5s
 
 [Install]
 WantedBy=multi-user.target

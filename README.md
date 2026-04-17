@@ -101,7 +101,8 @@ flashcp -v spi.img /dev/mtd0
 nand-sata-install
 ~~~
 
-выбираем там 2 пункт вроде, что то про MTD(SPI) и USB загрузку
+выбираем там 2 пункт (а по номеру 4 пункт) - "4  Boot from SPI  - system on SATA, USB or NVMe"
+ .. далее наш диск и т.д. (файловую систему я выбрал ext4)
 
 скрипт nand-sata-install всё сделает, потом предложит выключить 
 - выключаемся и вынимаем microSD карту...
@@ -109,6 +110,13 @@ nand-sata-install
 включаем, запуск происходит с USB устройства!
 
 -------------------------------
+
+~~~
+sudo -i
+apt install git
+git clone https://github.com/nvv13/piradio6.git
+mv ~/piradio6 /usr/share/radio
+~~~
 
 
 
