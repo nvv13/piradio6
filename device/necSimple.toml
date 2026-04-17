@@ -1,0 +1,19 @@
+# Generated with gen_keytables.pl from drivers/media/rc/keymaps/
+[[protocols]]
+name = "myremote"
+protocol = "nec"
+variant = "nec"
+[protocols.scancodes]
+0x45 = "KEY_POWER"
+0x47 = "KEY_MUTE"
+0x5a = "KEY_VOLUMEUP"
+0x08 = "KEY_VOLUMEDOWN"
+0x44 = "KEY_CHANNELUP"
+0x43 = "KEY_CHANNELDOWN"
+0x07 = "KEY_MENU"
+0x09 = "KEY_UP"
+0x16 = "KEY_DOWN"
+0x0d = "KEY_LEFT"
+0x0c = "KEY_RIGHT"
+0x5e = "KEY_OK"
+
