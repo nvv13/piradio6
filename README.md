@@ -10,11 +10,18 @@ This is a quick and dirty adaptation of code, done with the help of AI.
 
 ## Thanks to Bob Rathbone for his [project](https://github.com/bobrathbone/piradio6).
 
+
+
 собираем для начала, самое простое радио, 
+
 LCD1602+i2c адаптер, 
+
 2 энкодера, 
+
 ir-датчик (на плате расширения), 
+
 DAC на i2s например PCM5102a или "es9038q2m Rod Rain Audio" 
+
 ![photo](jpg/radio_ver1.jpg)
 -------------------------------
 
