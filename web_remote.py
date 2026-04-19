@@ -132,7 +132,7 @@ def launch_item(item):
     
     # Запуск M3U потока
     elif item['type'] == 'm3u':
-        channel_name = 'play '+item['name'][-3:]
+        channel_name = 'play '+item['name'][:3]
         stream_url = item['url']
         
         # Варианты запуска потокового видео/аудио
