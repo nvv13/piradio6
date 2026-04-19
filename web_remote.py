@@ -132,14 +132,14 @@ def launch_item(item):
     
     # Запуск M3U потока
     elif item['type'] == 'm3u':
-        channel_name = item['name'][-3:]
+        channel_name = 'play '+item['name'][-3:]
         stream_url = item['url']
         
         # Варианты запуска потокового видео/аудио
         # Вариант 1: Использовать VLC (рекомендуется)
         try:
             #subprocess.Popen(['vlc', stream_url])
-            subprocess.Popen(['mpc play ', channel_name])
+            subprocess.Popen(['mpc', channel_name])
             return True, f"Запущен канал: {channel_name} в VLC"
         except FileNotFoundError:
             pass
