@@ -442,5 +442,14 @@ systemctl start radiod
 -------------------------------
 
 
+## 8) 
+
+~~~
+sudo -i
+apt install python3-flask -y
+~~~
+
+
+-------------------------------
 
 
