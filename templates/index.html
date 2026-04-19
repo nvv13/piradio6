@@ -364,6 +364,7 @@
             const item = event.currentTarget;
             const name = item.dataset.name;
             const type = item.dataset.type;
+            const id   = item.getAttribute("id");
             
             // Убираем выделение со всех элементов в текущей вкладке
             document.querySelectorAll(`#${currentTab}-tab .item`).forEach(i => {
@@ -371,8 +372,8 @@
             });
             
             item.classList.add('selected');
-            selectedItem = { name, type };
-            console.log(`Выбрано: ${name} (${type})`);
+            selectedItem = { id, name, type };
+            console.log(`Выбрано: ${id} ${name} (${type})`);
         }
         
         async function launchSelected() {

@@ -35,6 +35,7 @@ def get_m3u_channels():
         with open(M3U_FILE_PATH, 'r', encoding='utf-8', errors='ignore') as file:
             lines = file.readlines()
         
+        indP=1
         i = 0
         while i < len(lines):
             line = lines[i].strip()
@@ -45,8 +46,8 @@ def get_m3u_channels():
                 # Формат: #EXTINF:0,Channel Name
                 match = re.search(r'#EXTINF:[^,]*,?(.*)$', line)
                 if match:
-                    channel_name = match.group(1).strip()
-                    
+                    channel_name = ('000'+str(indP))[-3:]+' '+match.group(1).strip()
+                    indP=indP+1
                     # Следующая строка - URL или путь к файлу
                     if i + 1 < len(lines):
                         channel_url = lines[i + 1].strip()
