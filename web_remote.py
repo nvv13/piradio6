@@ -6,6 +6,9 @@ import subprocess
 import glob
 import re
 
+from log_class import Log
+from web_config_class import Configuration
+
 app = Flask(__name__)
 
 # Путь к директории с файлами (измените на свой)
@@ -197,4 +200,6 @@ def launch():
         return jsonify({'success': False, 'error': message}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=80)
+    config = Configuration()
+    portHttp=config.getRemoteWebPort()
+    app.run(debug=True, host='0.0.0.0', port=portHttp)
