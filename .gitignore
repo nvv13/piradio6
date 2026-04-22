@@ -17,3 +17,5 @@ ws_epaper_class.py
 record_ripper.py
 wxconfig
 CVS/
+__pycache__
+

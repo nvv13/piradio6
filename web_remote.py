@@ -8,8 +8,11 @@ import re
 
 from log_class import Log
 from web_config_class import Configuration
+from web_send_class import Webrsend
 
 app = Flask(__name__)
+
+Webr = Webrsend()
 
 # Путь к директории с файлами (измените на свой)
 FILES_DIRECTORY = "/home/orangepi/musik"
@@ -135,14 +138,23 @@ def launch_item(item):
     
     # Запуск M3U потока
     elif item['type'] == 'm3u':
-        channel_name = ' play '+item['name'][:3]
+        channel_name = item['name']
+        play_number = 0
+        try:
+            play_number= int(channel_name[:3])
+        except ValueError:
+            pass
+        
         stream_url = item['url']
         
         # Варианты запуска потокового видео/аудио
         # Вариант 1: Использовать VLC (рекомендуется)
         try:
             #subprocess.Popen(['vlc', stream_url])
-            subprocess.Popen(['mpc', channel_name])
+            print('PLAY_' + str(play_number))
+            if play_number>0:
+            	reply = Webr.udpSend('PLAY_' + str(play_number))
+            	print(reply)
             return True, f"Запущен канал: {channel_name} в VLC"
         except FileNotFoundError:
             pass
