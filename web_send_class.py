@@ -1,18 +1,8 @@
 #!/usr/bin/env python3
 
-
 import configparser
-import sys
-import pwd
-import os
-import time
-import signal
 import socket
 import errno
-import re
-import pdb
-from evdev import *
-from threading import Timer
 
 # Radio project imports
 from config_class import Configuration
@@ -67,7 +57,7 @@ class Webrsend:
 ### Main routine ###
 if __name__ == "__main__":
 	Webr=Webrsend()
-	play_number = 3
+	play_number = 20
 	if play_number > 0:
         	print('PLAY_' + str(play_number))
         	reply = Webr.udpSend('PLAY_' + str(play_number))
