@@ -37,7 +37,7 @@ def signalHandler(signal,frame):
     sys.exit(0)
 
 # Get the Value from a namefile
-def getFileValue(self,namefile):
+def getFileValue(namefile):
     Value = ''
     if os.path.isfile(namefile):
         try:
