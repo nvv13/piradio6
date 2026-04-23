@@ -22,9 +22,11 @@ config = Configuration()
 pidfile = '/var/run/web_remote.pid'
 # Путь к директории с файлами (измените на свой)
 FILES_DIRECTORY = "/home/orangepi/musik"
-# Путь к M3U файлу (измените на свой)
-M3U_FILE_PATH = "/var/lib/mpd/playlists/Radio.m3u"
 
+# Radio files
+CurrentStationFile = RadioLibDir + "/current_station"  # номер тек станции в списке
+SourceNameFile = RadioLibDir + "/source_name"  # имя списка 
+VolumeFile = RadioLibDir + "/volume"
 
 # Signal SIGTERM handler
 def signalHandler(signal,frame):
@@ -32,6 +34,19 @@ def signalHandler(signal,frame):
     pid = os.getpid()
     log.message("Remote control stopped, PID " + str(pid), log.INFO)
     sys.exit(0)
+
+# Get the Value from a namefile
+def getFileValue(self,namefile):
+    Value = ''
+    if os.path.isfile(namefile):
+        try:
+            f = open(namefile,'r')
+            Value = f.read()
+            f.close()
+        except Exception as e:
+            print(str(e))
+            pass
+    return Value
 
 
 def get_available_files():
@@ -47,13 +62,13 @@ def get_available_files():
 def get_m3u_channels():
     """Получает список каналов из M3U файла"""
     channels = []
-    
-    if not os.path.exists(M3U_FILE_PATH):
-        print(f"M3U файл не найден: {M3U_FILE_PATH}")
+    m3u_file=getFileValue(SourceNameFile)+'.m3u'
+    if not os.path.exists(m3u_file):
+        print(f"M3U файл не найден: "+m3u_file)
         return channels
     
     try:
-        with open(M3U_FILE_PATH, 'r', encoding='utf-8', errors='ignore') as file:
+        with open(m3u_file, 'r', encoding='utf-8', errors='ignore') as file:
             lines = file.readlines()
         
         indP=1
@@ -121,6 +136,22 @@ def get_all_items():
             'name': channel['name'],
             'type': 'm3u',
             'url': channel['url']
+        })
+
+    # Добавляем номер текущего канала 
+    cur_station=getFileValue(CurrentStationFile)
+    items.append({
+            'name': cur_station,
+            'type': 'cur_station',
+            'position': cur_station
+        })
+    
+    # Добавляем значение громкости
+    cur_volume=getFileValue(VolumeFile)
+    items.append({
+            'name': cur_volume,
+            'type': 'cur_volume',
+            'volume': cur_volume
         })
     
     return items

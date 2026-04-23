@@ -447,7 +447,11 @@
         // Инициализация
         const files = items.filter(i => i.type === 'file');
         const m3uItems = items.filter(i => i.type === 'm3u');
-        
+
+        const cur_station = items.filter(i => i.type === 'cur_station');
+        const cur_volume = items.filter(i => i.type === 'cur_volume');
+        showMessage(cur_station[0].dataset.name)
+
         renderList(files, 'filesList', 'searchFiles');
         renderList(m3uItems, 'm3uList', 'searchM3u');
         
