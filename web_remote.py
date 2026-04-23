@@ -23,6 +23,11 @@ pidfile = '/var/run/web_remote.pid'
 # Путь к директории с файлами (измените на свой)
 FILES_DIRECTORY = "/home/orangepi/musik"
 
+# MPD files
+MpdLibDir = "/var/lib/mpd"
+PlaylistsDirectory =  MpdLibDir + "/playlists"
+MusicDirectory =  MpdLibDir + "/music"
+
 # Radio files
 RadioLibDir = "/var/lib/radiod"
 CurrentStationFile = RadioLibDir + "/current_station"  # номер тек станции в списке
@@ -42,7 +47,7 @@ def getFileValue(namefile):
     if os.path.isfile(namefile):
         try:
             f = open(namefile,'r')
-            Value = f.read()
+            Value = f.readline()
             f.close()
         except Exception as e:
             print(str(e))
@@ -63,7 +68,7 @@ def get_available_files():
 def get_m3u_channels():
     """Получает список каналов из M3U файла"""
     channels = []
-    m3u_file=getFileValue(SourceNameFile)+'.m3u'
+    m3u_file=PlaylistsDirectory+'/'+getFileValue(SourceNameFile)+'.m3u'
     if not os.path.exists(m3u_file):
         print(f"M3U файл не найден: "+m3u_file)
         return channels
