@@ -448,9 +448,21 @@
         const files = items.filter(i => i.type === 'file');
         const m3uItems = items.filter(i => i.type === 'm3u');
 
-        const cur_station = items.filter(i => i.type === 'cur_station');
-        const cur_volume = items.filter(i => i.type === 'cur_volume');
-        showMessage(cur_station[0].dataset.name)
+	// find() возвращает первый найденный элемент (не массив)
+	const cur_station = items.find(i => i.type === 'cur_station');
+        const cur_volume = items.find(i => i.type === 'cur_volume');
+
+	// Обращение к position напрямую
+	if (cur_station) {
+	    const position = cur_station.position;
+	    console.log(position);
+	    console.log(m3uItems[position-1].name);
+	    showMessage(m3uItems[position-1].name);
+	}
+	if (cur_volume) {
+	    const volume = cur_volume.volume;
+	    console.log(volume);
+	}
 
         renderList(files, 'filesList', 'searchFiles');
         renderList(m3uItems, 'm3uList', 'searchM3u');
