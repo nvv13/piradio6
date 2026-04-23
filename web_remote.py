@@ -24,6 +24,7 @@ pidfile = '/var/run/web_remote.pid'
 FILES_DIRECTORY = "/home/orangepi/musik"
 
 # Radio files
+RadioLibDir = "/var/lib/radiod"
 CurrentStationFile = RadioLibDir + "/current_station"  # номер тек станции в списке
 SourceNameFile = RadioLibDir + "/source_name"  # имя списка 
 VolumeFile = RadioLibDir + "/volume"
