@@ -1,23 +1,38 @@
 #!/usr/bin/env python3
 # app.py
 from flask import Flask, render_template, request, jsonify
+import sys
 import os
+import signal
 import subprocess
 import glob
 import re
 
+from web_daemon import Daemon
 from log_class import Log
 from web_config_class import Configuration
 from web_send_class import Webrsend
 
 app = Flask(__name__)
 
+log = Log()
 Webr = Webrsend()
 
+config = Configuration()
+pidfile = '/var/run/web_remote.pid'
 # Путь к директории с файлами (измените на свой)
 FILES_DIRECTORY = "/home/orangepi/musik"
 # Путь к M3U файлу (измените на свой)
 M3U_FILE_PATH = "/var/lib/mpd/playlists/Radio.m3u"
+
+
+# Signal SIGTERM handler
+def signalHandler(signal,frame):
+    global log
+    pid = os.getpid()
+    log.message("Remote control stopped, PID " + str(pid), log.INFO)
+    sys.exit(0)
+
 
 def get_available_files():
     """Получает список файлов из директории"""
@@ -211,7 +226,72 @@ def launch():
     else:
         return jsonify({'success': False, 'error': message}), 500
 
+# Daemon class
+class RemoteDaemon(Daemon):
+
+    def run(self):
+        global portHttp
+
+        log.init('radio')
+        progcall = str(sys.argv)
+        log.message(progcall, log.DEBUG)
+        log.message('web Remote control running pid ' + str(os.getpid()), log.INFO)
+        signal.signal(signal.SIGHUP,signalHandler)
+
+        portHttp=config.getRemoteWebPort()
+        app.run(debug=False, host='0.0.0.0', port=portHttp) # debug=True - второй раз запускает прогу!
+        log.message("web listen portHttp " + str(portHttp), log.DEBUG)
+
+    # Status enquiry
+    def status(self):
+        # Get the pid from the pidfile
+        try:
+            pf = open(self.pidfile,'r')
+            pid = int(pf.read().strip())
+            pf.close()
+        except IOError:
+            pid = None
+
+        if not pid:
+            message = "web Remote control status: not running"
+            log.message(message, log.INFO)
+            print(message)
+        else:
+            message = "web Remote control running pid " + str(pid)
+            log.message(message, log.INFO)
+            print(message)
+        return
+
+            
+
+
+# Print usage
+def usage():
+    print("Usage: sudo %s start|stop|status|restart|nodaemon")
+    sys.exit(2)
+
+
 if __name__ == '__main__':
-    config = Configuration()
-    portHttp=config.getRemoteWebPort()
-    app.run(debug=True, host='0.0.0.0', port=portHttp)
+
+    #if pwd.getpwuid(os.geteuid()).pw_uid > 0:
+    #    print("This program must be run with sudo or root permissions!")
+    #    usage()
+
+    daemon = RemoteDaemon(pidfile)
+    if len(sys.argv) >= 2:
+        if 'start' == sys.argv[1]:
+            daemon.start()
+        elif 'nodaemon' == sys.argv[1]:
+            daemon.nodaemon()
+        elif 'stop' == sys.argv[1]:
+            daemon.stop()
+        elif 'restart' == sys.argv[1]:
+            daemon.restart()
+        elif 'status' == sys.argv[1]:
+            daemon.status()
+        else:
+            print("Unknown command: " + sys.argv[1])
+            usage()
+        sys.exit(0)
+    else:
+        usage()

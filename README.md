@@ -442,11 +442,31 @@ systemctl start radiod
 -------------------------------
 
 
-## 8) 
+## 8) Легкая переключалка каналов Веб интерфейсу
+
+подключаемся так http://x.x.x.x
+
+где x.x.x.x - IP адрес
+
+
+если порт, указываеться в настройках
+
+radiod.conf
+
+web_control_port=80
+
+отличный от 80
+
+то подключаемся так http://x.x.x.x:№порта
+
 
 ~~~
 sudo -i
 apt install python3-flask -y
+chmod +x /usr/share/radio/web_remote.py
+cp /usr/share/radio/web_remote.service /usr/lib/systemd/system
+systemctl enable web_remote
+systemctl start web_remote
 ~~~
 
 

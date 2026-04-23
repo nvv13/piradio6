@@ -1,0 +1,17 @@
+# web Radio remote control systemd script
+# $Id: ireventd.service,v 1.3 2023/07/22 15:58:19 bob Exp $
+
+# It uses web_remote.py (Daemon) 
+# This file is copied to /lib/systemd/system/web_remote.service 
+
+[Unit]
+Description=web Radio remote control daemon
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/share/radio/web_remote.py nodaemon
+ExecStop=/usr/share/radio/web_remote.py stop
+
+[Install]
+WantedBy=multi-user.target
