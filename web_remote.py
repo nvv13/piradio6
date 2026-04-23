@@ -47,7 +47,7 @@ def getFileValue(namefile):
     if os.path.isfile(namefile):
         try:
             f = open(namefile,'r')
-            Value = f.readline()
+            Value = f.readline().rstrip('\n').rstrip('\r')
             f.close()
         except Exception as e:
             print(str(e))
