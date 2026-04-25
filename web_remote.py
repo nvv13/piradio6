@@ -236,7 +236,7 @@ def launch_item(item):
         print(file_path)
         reply = Webr.udpSend(file_path)
         print(reply)
-        return True, f"Запущен файл: {file_path}"
+        return True, f"Нажата кнопка: {item['name']}"
     
     # Запуск M3U потока
     elif item['type'] == 'm3u':
