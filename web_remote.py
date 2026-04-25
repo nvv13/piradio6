@@ -127,13 +127,78 @@ def get_all_items():
     items = []
     
     # Добавляем файлы из директории
-    files = get_available_files()
-    for file in files:
-        items.append({
-            'name': file,
+    #files = get_available_files()
+    #for file in files:
+    #    items.append({
+    #        'name': file,
+    #        'type': 'file',
+    #        'path': os.path.join(FILES_DIRECTORY, file)
+    #    })
+    items.append({
+            'name': 'VOLUMEUP',
             'type': 'file',
-            'path': os.path.join(FILES_DIRECTORY, file)
+            'path': 'KEY_VOLUMEUP'
         })
+    items.append({
+            'name': 'VOLUMEDOWN',
+            'type': 'file',
+            'path': 'KEY_VOLUMEDOWN'
+        })
+    items.append({
+            'name': 'MUTE',
+            'type': 'file',
+            'path': 'KEY_MUTE'
+        })
+    items.append({
+            'name': 'CHANNELUP',
+            'type': 'file',
+            'path': 'KEY_CHANNELUP'
+        })
+    items.append({
+            'name': 'CHANNELDOWN',
+            'type': 'file',
+            'path': 'KEY_CHANNELDOWN'
+        })
+    items.append({
+            'name': 'MENU',
+            'type': 'file',
+            'path': 'KEY_MENU'
+        })
+    items.append({
+            'name': 'UP',
+            'type': 'file',
+            'path': 'KEY_UP'
+        })
+    items.append({
+            'name': 'DOWN',
+            'type': 'file',
+            'path': 'KEY_DOWN'
+        })
+    items.append({
+            'name': 'LEFT',
+            'type': 'file',
+            'path': 'KEY_LEFT'
+        })
+    items.append({
+            'name': 'RIGHT',
+            'type': 'file',
+            'path': 'KEY_RIGHT'
+        })
+    items.append({
+            'name': 'OK',
+            'type': 'file',
+            'path': 'KEY_OK'
+        })
+    items.append({
+            'name': 'INFO',
+            'type': 'file',
+            'path': 'KEY_INFO'
+        })
+    #items.append({
+    #        'name': 'EXIT',
+    #        'type': 'file',
+    #        'path': 'KEY_EXIT'
+    #    })
     
     # Добавляем каналы из M3U
     channels = get_m3u_channels()
@@ -168,25 +233,10 @@ def launch_item(item):
     # Запуск обычного файла
     if item['type'] == 'file':
         file_path = item['path']
-        
-        if not os.path.exists(file_path):
-            return False, "Файл не найден"
-        
-        # Запускаем в зависимости от расширения
-        if item['name'].endswith('.py'):
-            subprocess.Popen(['python3', file_path])
-        elif item['name'].endswith('.sh'):
-            subprocess.Popen(['bash', file_path])
-        elif item['name'].endswith('.mp3') or item['name'].endswith('.wav'):
-            # Аудио файлы
-            subprocess.Popen(['xdg-open', file_path])
-        elif item['name'].endswith('.mp4') or item['name'].endswith('.avi'):
-            # Видео файлы
-            subprocess.Popen(['xdg-open', file_path])
-        else:
-            subprocess.Popen(['xdg-open', file_path])
-        
-        return True, f"Запущен файл: {item['name']}"
+        print(file_path)
+        reply = Webr.udpSend(file_path)
+        print(reply)
+        return True, f"Запущен файл: {file_path}"
     
     # Запуск M3U потока
     elif item['type'] == 'm3u':
@@ -207,26 +257,11 @@ def launch_item(item):
             if play_number>0:
             	reply = Webr.udpSend('PLAY_' + str(play_number))
             	print(reply)
-            return True, f"Запущен канал: {channel_name} в VLC"
+            return True, f"Запущен канал: {channel_name}"
         except FileNotFoundError:
             pass
         
-        # Вариант 2: Использовать mpv
-        try:
-            subprocess.Popen(['mpv', stream_url])
-            return True, f"Запущен канал: {channel_name} в mpv"
-        except FileNotFoundError:
-            pass
-        
-        # Вариант 3: Использовать xdg-open (откроет в браузере, если это HLS)
-        try:
-            if stream_url.endswith('.m3u8') or 'm3u8' in stream_url:
-                subprocess.Popen(['xdg-open', stream_url])
-                return True, f"Открыт поток: {channel_name} в браузере"
-        except:
-            pass
-        
-        return False, f"Не удалось запустить канал {channel_name}. Установите VLC или mpv."
+        return False, f"Не удалось запустить канал {channel_name}."
     
     return False, "Неизвестный тип элемента"
 

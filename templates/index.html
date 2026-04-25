@@ -261,13 +261,10 @@
 
         <div class="tabs">
             <button class="tab-btn active" data-tab="m3u">☕ Радио Каналы</button>
-          <!--   <button class="tab-btn" data-tab="files">📁 Файлы</button> -->
+            <button class="tab-btn" data-tab="files">Управление</button> 
         </div>
         
         <div id="files-tab" class="tab-content">
-            <div class="search-box">
-                <input type="text" id="searchFiles" placeholder="🔍 Поиск файлов..." autocomplete="off">
-            </div>
             <ul class="items-list" id="filesList"></ul>
         </div>
         
@@ -333,7 +330,7 @@
                     <li class="item" data-name="${escapeHtml(item.name)}" data-type="${item.type}">
                         <span class="item-icon">${getIcon(item)}</span>
                         <span class="item-name">${escapeHtml(item.name)}</span>
-                        <span class="item-type">${item.type === 'm3u' ? 'Радио канал' : 'Файл'}</span>
+                        <span class="item-type">${item.type === 'm3u' ? 'Радио канал' : 'Кнопка'}</span>
                     </li>
                 `).join('');
                 
@@ -417,7 +414,7 @@
             const m3uCount = items.filter(i => i.type === 'm3u').length;
             const statsText = document.getElementById('statsText');
             if (statsText) {
-                statsText.textContent = `📁 Файлов: ${filesCount} | ☕ Каналов: ${m3uCount}`;
+                statsText.textContent = `☕ Каналов: ${m3uCount}`;
             }
         }
         

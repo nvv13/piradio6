@@ -122,14 +122,79 @@ def get_all_items():
     items = []
     
     # Добавляем файлы из директории
-    files = get_available_files()
-    for file in files:
-        items.append({
-            'name': file,
+    #files = get_available_files()
+    #for file in files:
+    #    items.append({
+    #        'name': file,
+    #        'type': 'file',
+    #        'path': os.path.join(FILES_DIRECTORY, file)
+    #    })
+    items.append({
+            'name': 'VOLUMEUP',
             'type': 'file',
-            'path': os.path.join(FILES_DIRECTORY, file)
+            'path': 'KEY_VOLUMEUP'
         })
-    
+    items.append({
+            'name': 'VOLUMEDOWN',
+            'type': 'file',
+            'path': 'KEY_VOLUMEDOWN'
+        })
+    items.append({
+            'name': 'MUTE',
+            'type': 'file',
+            'path': 'KEY_MUTE'
+        })
+    items.append({
+            'name': 'CHANNELUP',
+            'type': 'file',
+            'path': 'KEY_CHANNELUP'
+        })
+    items.append({
+            'name': 'CHANNELDOWN',
+            'type': 'file',
+            'path': 'KEY_CHANNELDOWN'
+        })
+    items.append({
+            'name': 'MENU',
+            'type': 'file',
+            'path': 'KEY_MENU'
+        })
+    items.append({
+            'name': 'UP',
+            'type': 'file',
+            'path': 'KEY_UP'
+        })
+    items.append({
+            'name': 'DOWN',
+            'type': 'file',
+            'path': 'KEY_DOWN'
+        })
+    items.append({
+            'name': 'LEFT',
+            'type': 'file',
+            'path': 'KEY_LEFT'
+        })
+    items.append({
+            'name': 'RIGHT',
+            'type': 'file',
+            'path': 'KEY_RIGHT'
+        })
+    items.append({
+            'name': 'OK',
+            'type': 'file',
+            'path': 'KEY_OK'
+        })
+    items.append({
+            'name': 'INFO',
+            'type': 'file',
+            'path': 'KEY_INFO'
+        })
+    #items.append({
+    #        'name': 'EXIT',
+    #        'type': 'file',
+    #        'path': 'KEY_EXIT'
+    #    })
+
     # Добавляем каналы из M3U
     channels = get_m3u_channels()
     for channel in channels:
