@@ -254,7 +254,7 @@
         </div>
 
         <div class="content" style="padding: 0 10px 10px 10px;">
-            <button class="launch-btn" id="launchBtn">🚀 Запустить выбранное</button>
+            <!-- <button class="launch-btn" id="launchBtn">🚀 Запустить выбранное</button> -->
             <div id="message" class="message"></div>
         </div>
 
@@ -288,7 +288,7 @@
         let selectedItem = null;
         let currentTab = 'm3u'; // ТВ каналы по умолчанию
         
-        const launchBtn = document.getElementById('launchBtn');
+        //const launchBtn = document.getElementById('launchBtn');
         const messageDiv = document.getElementById('message');
         
         function showMessage(text, isError = false) {
@@ -372,6 +372,7 @@
             item.classList.add('selected');
             selectedItem = { name, type };
             console.log(`Выбрано: ${name} (${type})`);
+	    launchSelected();
         }
         
         async function launchSelected() {
@@ -380,9 +381,9 @@
                 return;
             }
             
-            launchBtn.disabled = true;
-            launchBtn.classList.add('launching');
-            launchBtn.textContent = '⏳ Запуск...';
+            //launchBtn.disabled = true;
+            //launchBtn.classList.add('launching');
+            //launchBtn.textContent = '⏳ Запуск...';
             
             try {
                 const response = await fetch('/launch', {
@@ -396,16 +397,17 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    showMessage(`✅ ${data.message}`);
+                    if(selectedItem[1]!='file')
+                      showMessage(`✅ ${data.message}`);
                 } else {
                     showMessage(`❌ Ошибка: ${data.error}`, true);
                 }
             } catch (error) {
                 showMessage(`❌ Ошибка соединения: ${error.message}`, true);
             } finally {
-                launchBtn.disabled = false;
-                launchBtn.classList.remove('launching');
-                launchBtn.textContent = '🚀 Запустить выбранное';
+                //launchBtn.disabled = false;
+                //launchBtn.classList.remove('launching');
+                //launchBtn.textContent = '🚀 Запустить выбранное';
             }
         }
         
@@ -471,7 +473,7 @@
         });
         
         // Обработчик кнопки запуска
-        launchBtn.addEventListener('click', launchSelected);
+        // launchBtn.addEventListener('click', launchSelected);
         
         console.log('Медиа центр загружен. Активная вкладка: ТВ каналы');
     </script>
