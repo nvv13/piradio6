@@ -397,10 +397,10 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    if(selectedItem[1]!='file')
-                      showMessage(`✅ ${data.message}`);
+                    if(selectedItem.type!='file')
+                      {showMessage(`✅ ${data.message}`);}
                 } else {
-                    showMessage(`❌ Ошибка: ${data.error}`, true);
+                      showMessage(`❌ Ошибка: ${data.error}`, true);
                 }
             } catch (error) {
                 showMessage(`❌ Ошибка соединения: ${error.message}`, true);
