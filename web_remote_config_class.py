@@ -29,6 +29,7 @@ class Configuration:
     # Remote control parameters 
     _remote_control_host = 'localhost'   # Remote control to radio communication port
     _remote_control_port = 5100      # Remote control to radio communication port
+    _web_control_port = 5000      # web http port Default 5000, 80 etc
 
     # Shoutcast ID
     _shoutcast_key = "anCLSEDQODrElkxl"
@@ -66,6 +67,12 @@ class Configuration:
                     except:
                         self.invalidParameter(ConfigFile,option,parameter)
 
+                elif option == 'web_control_port':
+                    try:
+                        self.web_control_port = int(parameter)
+                    except:
+                        self.invalidParameter(ConfigFile,option,parameter)
+
                 if option == 'shoutcast_key':
                     self.shoutcast_key = parameter
 
@@ -89,6 +96,10 @@ class Configuration:
     # Get the remote Port, default 5100
     def getRemoteUdpPort(self):
         return self.remote_control_port
+
+    # Get the remote Web Port, default 5000
+    def getRemoteWebPort(self):
+        return self.web_control_port
 
     # Shoutcast key
     def getShoutcastKey(self):

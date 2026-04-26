@@ -10,7 +10,7 @@ import re
 
 from web_daemon import Daemon
 from log_class import Log
-from web_config_class import Configuration
+from web_remote_config_class import Configuration
 from web_send_class import Webrsend
 
 app = Flask(__name__)
