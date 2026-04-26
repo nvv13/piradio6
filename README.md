@@ -446,7 +446,11 @@ systemctl start radiod
 
 вот как выглядит с мобильного телефона
 
+Радио Каналы
+
 ![photo](jpg/web_remote1.jpg)
+
+Управление кнопками
 
 ![photo](jpg/web_remote2.jpg)
 
