@@ -488,7 +488,8 @@ web_remote_config_class.py
 web_send_class.py
 ~~~
 
-и переходим к пункту (8)
+и сделать установку python3-flask и сервиса web_remote
+
 
 -------------------------------
 
