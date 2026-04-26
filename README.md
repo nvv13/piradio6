@@ -473,7 +473,7 @@ systemctl enable web_remote
 systemctl start web_remote
 ~~~
 
-можно добавить управление и в существующую версию 8.х 
+можно добавить управление и в существующую версию bobrathbone радио 8.х для Raspbery Pi
 
 для этого скопировать в /usr/share/radio
 
