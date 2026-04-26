@@ -463,6 +463,22 @@ systemctl enable web_remote
 systemctl start web_remote
 ~~~
 
+можно добавить управление и в существующую версию 8.х 
+
+для этого скопировать в /usr/share/radio
+
+файлы из проекта
+
+~~~
+templates/index.ntml
+web_daemon.py
+web_remote.py
+web_remote.service
+web_remote_config_class.py
+web_send_class.py
+~~~
+
+и переходим к пункту (8)
 
 -------------------------------
 
