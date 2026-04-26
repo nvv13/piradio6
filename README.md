@@ -444,6 +444,10 @@ systemctl start radiod
 
 ## 8) Легкая переключалка каналов Веб интерфейсу
 
+![photo](jpg/web_remote1.jpg)
+
+![photo](jpg/web_remote2.jpg)
+
 подключаемся так http://x.x.x.x
 
 где x.x.x.x - IP адрес
