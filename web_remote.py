@@ -7,6 +7,7 @@ import signal
 import subprocess
 import glob
 import re
+import time
 
 from web_daemon import Daemon
 from log_class import Log
@@ -256,6 +257,7 @@ def launch_item(item):
         print(file_path)
         reply = Webr.udpSend(file_path)
         print(reply)
+        time.sleep(3) # Sleep for 3 seconds
         cur_station=getFileValue(CurrentStationFile)
         channels = get_m3u_channels()
         #print (channels)
