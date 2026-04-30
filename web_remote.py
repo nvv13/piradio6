@@ -257,7 +257,8 @@ def launch_item(item):
         print(file_path)
         reply = Webr.udpSend(file_path)
         print(reply)
-        time.sleep(3) # Sleep for 3 seconds
+        if file_path.find('CHANNEL')>0:
+            time.sleep(3) # Sleep for 3 seconds
         cur_station=getFileValue(CurrentStationFile)
         channels = get_m3u_channels()
         #print (channels)
