@@ -259,7 +259,7 @@ def launch_item(item):
         cur_station=getFileValue(CurrentStationFile)
         channels = get_m3u_channels()
         print (channels)
-        chname='' #channels[int(cur_station)].name
+        chname=channels[int(cur_station)].get('name')
         cur_volume=getFileValue(VolumeFile)
         return True, f"Играем:{chname},  громкость:{cur_volume}"
     
