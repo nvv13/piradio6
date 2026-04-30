@@ -258,7 +258,7 @@ def launch_item(item):
         reply = Webr.udpSend(file_path)
         print(reply)
         if file_path.find('CHANNEL')>0:
-            time.sleep(3) # Sleep for 3 seconds
+            time.sleep(2.5) # Sleep for 2.5 seconds
         else:
             time.sleep(0.5) # Sleep for 0.5 seconds
         cur_station=getFileValue(CurrentStationFile)
