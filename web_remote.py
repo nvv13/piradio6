@@ -259,7 +259,7 @@ def launch_item(item):
         print(reply)
         if file_path.find('CHANNEL')>0:
             time.sleep(3) # Sleep for 3 seconds
-        else
+        else:
             time.sleep(1) # Sleep for 3 seconds
         cur_station=getFileValue(CurrentStationFile)
         channels = get_m3u_channels()
