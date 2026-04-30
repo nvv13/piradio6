@@ -258,10 +258,12 @@ def launch_item(item):
         print(reply)
         cur_station=getFileValue(CurrentStationFile)
         channels = get_m3u_channels()
-        print (channels)
-        chname=channels[int(cur_station)].get('name')
+        #print (channels)
+        chname=''
+        if int(cur_station)-1>0 and len(channels)>int(cur_station):
+            chname=channels[int(cur_station)-1].get('name')
         cur_volume=getFileValue(VolumeFile)
-        return True, f"Играем:{chname},  громкость:{cur_volume}"
+        return True, f"Играем: {chname},  громкость:{cur_volume}"
     
     # Запуск M3U потока
     elif item['type'] == 'm3u':
