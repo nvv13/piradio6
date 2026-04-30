@@ -20,13 +20,14 @@ Webr = Webrsend()
 
 config = Configuration()
 pidfile = '/var/run/web_remote.pid'
-# Путь к директории с файлами (измените на свой)
-FILES_DIRECTORY = "/home/orangepi/musik"
 
 # MPD files
 MpdLibDir = "/var/lib/mpd"
 PlaylistsDirectory =  MpdLibDir + "/playlists"
+PlaylistsFile='Radio.m3u'
 MusicDirectory =  MpdLibDir + "/music"
+# Путь к директории с файлами (измените на свой)
+FILES_DIRECTORY = PlaylistsDirectory
 
 # Radio files
 RadioLibDir = "/var/lib/radiod"
@@ -67,8 +68,9 @@ def get_available_files():
 
 def get_m3u_channels():
     """Получает список каналов из M3U файла"""
+    global PlaylistsFile    
     channels = []
-    m3u_file=PlaylistsDirectory+'/'+getFileValue(SourceNameFile)+'.m3u'
+    m3u_file=PlaylistsDirectory+'/'+PlaylistsFile
     if not os.path.exists(m3u_file):
         print(f"M3U файл не найден: "+m3u_file)
         return channels
@@ -105,8 +107,12 @@ def get_m3u_channels():
                 i += 1
             # Если встретили URL без метаданных
             elif line and not line.startswith('#'):
-                # Используем имя файла как название канала
-                channel_name = os.path.basename(line).split('.')[0]
+                # Используем имя файла как название
+                nameFile=os.path.basename(line)
+                #if nameFile.rfind(".")>0:
+                #    nameFile=nameFile[:nameFile.rfind(".")]
+                channel_name = ('000'+str(indP))[-3:]+' '+nameFile
+                indP=indP+1
                 channels.append({
                     'name': channel_name,
                     'url': line,
@@ -126,81 +132,83 @@ def get_all_items():
     """Объединяет файлы и M3U каналы в один список"""
     items = []
     
-    # Добавляем файлы из директории
-    #files = get_available_files()
-    #for file in files:
-    #    items.append({
-    #        'name': file,
-    #        'type': 'file',
-    #        'path': os.path.join(FILES_DIRECTORY, file)
-    #    })
+    # Добавляем файлы m3u из директории mpd
+    files = get_available_files()
+    for file in files:
+        items.append({
+            'name': file,
+            'type': 'file',
+            'path': os.path.join(FILES_DIRECTORY, file)
+        })
+    
+    # Добавляем кнопки управления
     items.append({
             'name': 'VOLUME UP',
-            'type': 'file',
+            'type': 'cntrl',
             'path': 'KEY_VOLUMEUP'
         })
     items.append({
             'name': 'VOLUME DOWN',
-            'type': 'file',
+            'type': 'cntrl',
             'path': 'KEY_VOLUMEDOWN'
         })
     items.append({
             'name': 'MUTE',
-            'type': 'file',
+            'type': 'cntrl',
             'path': 'KEY_MUTE'
         })
     #items.append({
-    #        'name': 'CHANNELUP',
-    #        'type': 'file',
+    #        'name': 'CHANNEL UP',
+    #        'type': 'cntrl',
     #        'path': 'KEY_CHANNELUP'
     #    })
     #items.append({
-    #        'name': 'CHANNELDOWN',
-    #        'type': 'file',
+    #        'name': 'CHANNEL DOWN',
+    #        'type': 'cntrl',
     #        'path': 'KEY_CHANNELDOWN'
     #    })
     #items.append({
     #        'name': 'MENU',
-    #        'type': 'file',
+    #        'type': 'cntrl',
     #        'path': 'KEY_MENU'
     #    })
     #items.append({
     #        'name': 'UP',
-    #        'type': 'file',
+    #        'type': 'cntrl',
     #        'path': 'KEY_UP'
     #    })
     #items.append({
     #        'name': 'DOWN',
-    #        'type': 'file',
+    #        'type': 'cntrl',
     #        'path': 'KEY_DOWN'
     #    })
     #items.append({
     #        'name': 'LEFT',
-    #        'type': 'file',
+    #        'type': 'cntrl',
     #        'path': 'KEY_LEFT'
     #    })
     #items.append({
     #        'name': 'RIGHT',
-    #        'type': 'file',
+    #        'type': 'cntrl',
     #        'path': 'KEY_RIGHT'
     #    })
     #items.append({
     #        'name': 'OK',
-    #        'type': 'file',
+    #        'type': 'cntrl',
     #        'path': 'KEY_OK'
     #    })
     #items.append({
     #        'name': 'INFO',
-    #        'type': 'file',
+    #        'type': 'cntrl',
     #        'path': 'KEY_INFO'
     #    })
     #items.append({
     #        'name': 'EXIT',
-    #        'type': 'file',
+    #        'type': 'cntrl',
     #        'path': 'KEY_EXIT'
     #    })
     
-    # Добавляем каналы из M3U
+    # Добавляем элементы списка из M3U
     channels = get_m3u_channels()
     for channel in channels:
         items.append({
@@ -230,13 +238,30 @@ def get_all_items():
 def launch_item(item):
     """Запускает файл или M3U поток"""
     
-    # Запуск обычного файла
+    global PlaylistsFile    
+    # Загрузка нового списка из файла .M3U
     if item['type'] == 'file':
+        file_path = item['path']
+        if not os.path.exists(file_path):
+            return False, "Файл не найден"
+        PlaylistsFile=item['name']
+        print('PLAYLIST:' + PlaylistsFile[0:-4])
+        reply = Webr.udpSend('PLAYLIST:' + PlaylistsFile[0:-4])
+        print(reply)
+        return True, f"Выбран список: {PlaylistsFile}"
+    
+    # Нажали кнопку
+    elif item['type'] == 'cntrl':
         file_path = item['path']
         print(file_path)
         reply = Webr.udpSend(file_path)
         print(reply)
-        return True, f"Нажата кнопка: {item['name']}"
+        cur_station=getFileValue(CurrentStationFile)
+        channels = get_m3u_channels()
+        print (channels)
+        chname='' #channels[int(cur_station)].name
+        cur_volume=getFileValue(VolumeFile)
+        return True, f"Играем:{chname},  громкость:{cur_volume}"
     
     # Запуск M3U потока
     elif item['type'] == 'm3u':
@@ -249,19 +274,18 @@ def launch_item(item):
         
         stream_url = item['url']
         
-        # Варианты запуска потокового видео/аудио
-        # Вариант 1: Использовать VLC (рекомендуется)
+        # Варианты запуска потокового аудио или файла из списка
         try:
             #subprocess.Popen(['vlc', stream_url])
             print('PLAY_' + str(play_number))
             if play_number>0:
             	reply = Webr.udpSend('PLAY_' + str(play_number))
             	print(reply)
-            return True, f"Запущен канал: {channel_name}"
+            return True, f"Играем: {channel_name}"
         except FileNotFoundError:
             pass
         
-        return False, f"Не удалось запустить канал {channel_name}."
+        return False, f"Не удалось запустить радио {channel_name}."
     
     return False, "Неизвестный тип элемента"
 
@@ -269,6 +293,31 @@ def launch_item(item):
 def index():
     items = get_all_items()
     return render_template('index.html', items=items)
+
+@app.route('/undefined')
+def index2():
+    items = get_all_items()
+    return render_template('index.html', items=items)
+
+
+@app.route('/refresh-m3u', methods=['POST'])
+def refresh_m3u():
+    """Принудительно обновляет только M3U список элементов"""
+    
+    try:
+        # Получаем свежие каналы
+        channels = get_m3u_channels()
+        
+        return jsonify({
+            'success': True,
+            'items': [{'name': ch['name'], 'type': 'm3u'} for ch in channels],
+            'count': len(channels)
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 @app.route('/launch', methods=['POST'])
 def launch():

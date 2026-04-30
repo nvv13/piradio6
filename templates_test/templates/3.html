@@ -179,33 +179,6 @@
             opacity: 0.6;
             cursor: not-allowed;
         }
-
-	.refresh-btn {
-            width: 100%;
-            margin-top: 20px;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        
-        .refresh-btn:hover {
-            background: #5a67d8;
-            transform: translateY(-1px);
-        }
-        
-        .refresh-btn:active {
-            transform: translateY(0);
-        }
-        
-        .refresh-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
         
         .message {
             margin-top: 15px;
@@ -281,23 +254,26 @@
         </div>
 
         <div class="content" style="padding: 0 10px 10px 10px;">
+            <!-- <button class="launch-btn" id="launchBtn">🚀 Запустить выбранное</button> -->
             <div id="message" class="message"></div>
         </div>
 
 
         <div class="tabs">
-            <button class="tab-btn active" data-tab="m3u">Радио</button>
+            <button class="tab-btn" data-tab="files">Списки</button> 
+            <button class="tab-btn active" data-tab="m3u">Элементы списка</button>
             <button class="tab-btn" data-tab="cntrl">Управление</button> 
+        </div>
+        
+
+        <div id="files-tab" class="tab-content">
+            <ul class="items-list" id="filesList"></ul>
         </div>
         
 
         <div id="m3u-tab" class="tab-content active">
             <div class="search-box">
-                <!--  <button class="launch-btn" id="launchBtn">🚀 Запустить выбранное</button> -->
                 <input type="text" id="searchM3u" placeholder="🔍 Поиск ..." autocomplete="off">
-                <!--  <button class="refresh-btn" onclick="refreshM3U()">
-                    🔄 Обновить
-                </button> -->
             </div>
             <ul class="items-list" id="m3uList"></ul>
         </div>
@@ -361,7 +337,7 @@
                     <li class="item" data-name="${escapeHtml(item.name)}" data-type="${item.type}">
                         <span class="item-icon">${getIcon(item)}</span>
                         <span class="item-name">${escapeHtml(item.name)}</span>
-                        <span class="item-type"><a class="link" href=${item.url}>${item.type === 'm3u' ? 'Радио' : item.type === 'file' ? 'Список' : 'Кнопка'}</a></span>
+                        <span class="item-type">${item.type === 'm3u' ? 'Радио/файл' : item.type === 'file' ? 'Список' : 'Кнопка'}</span>
                     </li>
                 `).join('');
                 
@@ -408,7 +384,7 @@
         
         async function launchSelected() {
             if (!selectedItem) {
-                showMessage('❌ Пожалуйста, сделайте выбор для запуска', true);
+                showMessage('❌ Пожалуйста, выберите элемент для запуска', true);
                 return;
             }
             
@@ -428,14 +404,8 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    if(selectedItem.type=='cntrl')
-                      {
-                      showMessage(`${data.message}`);
-                      }
-                      else
-                      {
-                      showMessage(`✅ ${data.message}`);
-                      }
+                    if(selectedItem.type!='cntrl')
+                      {showMessage(`✅ ${data.message}`);}
                     if(selectedItem.type=='file')
                       {
 			refreshM3U();
@@ -457,7 +427,9 @@
         }
         
         async function refreshList(endpoint, type) {
-            const refreshBtn = document.querySelector('#m3u-tab .refresh-btn');
+            const refreshBtn = type === 'm3u' ? 
+                document.querySelector('#m3u-tab .refresh-btn') : 
+                document.querySelector('#files-tab .refresh-btn');
             
             if (refreshBtn) {
                 refreshBtn.disabled = true;
@@ -479,16 +451,18 @@
                         // Обновляем M3U список
                         const m3uItems = data.items;
                         renderList(m3uItems, 'm3uList', 'searchM3u');
-                        showMessage(`✅ Обновлено! Загружено ${data.count} Радио каналов`);
+                        showMessage(`✅ Обновлено! Загружено ${data.count} Элементов`);
                         
                         // Обновляем глобальный массив items
                         items = items.filter(i => i.type !== 'm3u').concat(m3uItems);
                     } else {
                         // Обновляем все списки
+                        const filesItems = data.items.filter(i => i.type === 'file');
                         const m3uItems = data.items.filter(i => i.type === 'm3u');
                         
+                        renderList(filesItems, 'filesList', 'searchFiles');
                         renderList(m3uItems, 'm3uList', 'searchM3u');
-                        showMessage(`✅ Обновлено! Радио каналов: ${data.stats.m3u}`);
+                        showMessage(`✅ Обновлено! Списков: ${data.stats.files}, Элементов: ${data.stats.m3u}`);
                         
                         // Обновляем глобальный массив items
                         items = data.items;
@@ -508,10 +482,11 @@
             }
         }        
         function updateStats() {
+            const filesCount = items.filter(i => i.type === 'file').length;
             const m3uCount = items.filter(i => i.type === 'm3u').length;
             const statsText = document.getElementById('statsText');
             if (statsText) {
-                statsText.textContent = `☕ Радио каналов: ${m3uCount}`;
+                statsText.textContent = `☕ Элементов: ${m3uCount}`;
             }
         }
         
@@ -542,26 +517,27 @@
         
         // Инициализация
         const cntrl = items.filter(i => i.type === 'cntrl');
+        const files = items.filter(i => i.type === 'file');
         const m3uItems = items.filter(i => i.type === 'm3u');
 
 	// find() возвращает первый найденный элемент (не массив)
 	const cur_station = items.find(i => i.type === 'cur_station');
         const cur_volume = items.find(i => i.type === 'cur_volume');
 
-        volume=''
-	if (cur_volume) {
-	    volume = ',  громкость:'+cur_volume.volume;
-	    console.log(volume);
-	}
 	// Обращение к position напрямую
 	if (cur_station) {
 	    const position = cur_station.position;
 	    console.log(position);
 	    console.log(m3uItems[position-1].name);
-	    showMessage('Играем: '+m3uItems[position-1].name+volume);
+	    showMessage(m3uItems[position-1].name);
+	}
+	if (cur_volume) {
+	    const volume = cur_volume.volume;
+	    console.log(volume);
 	}
 
         renderList(cntrl, 'cntrlList', 'searchCntrl');
+        renderList(files, 'filesList', 'searchFiles');
         renderList(m3uItems, 'm3uList', 'searchM3u');
         
         // Обработчики переключения вкладок
@@ -572,7 +548,7 @@
         // Обработчик кнопки запуска
         // launchBtn.addEventListener('click', launchSelected);
         
-        console.log('Медиа центр загружен. Активная вкладка: Радио');
+        console.log('Медиа центр загружен. Активная вкладка: Элементы списка');
     </script>
 </body>
 </html>

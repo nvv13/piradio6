@@ -428,14 +428,8 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    if(selectedItem.type=='cntrl')
-                      {
-                      showMessage(`${data.message}`);
-                      }
-                      else
-                      {
-                      showMessage(`✅ ${data.message}`);
-                      }
+                    if(selectedItem.type!='cntrl')
+                      {showMessage(`✅ ${data.message}`);}
                     if(selectedItem.type=='file')
                       {
 			refreshM3U();

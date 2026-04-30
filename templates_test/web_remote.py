@@ -20,13 +20,14 @@ app = Flask(__name__)
 
 #config = Configuration()
 pidfile = '/var/run/web_remote.pid'
-# Путь к директории с файлами (измените на свой)
-FILES_DIRECTORY = "/home/orangepi/musik"
 
 # MPD files
 MpdLibDir = "/var/lib/mpd"
 PlaylistsDirectory =  MpdLibDir + "/playlists"
+PlaylistsFile='Radio.m3u'
 MusicDirectory =  MpdLibDir + "/music"
+# Путь к директории с файлами (измените на свой)
+FILES_DIRECTORY = PlaylistsDirectory
 
 # Radio files
 RadioLibDir = "/var/lib/radiod"
@@ -61,9 +62,11 @@ def get_available_files():
 
 def get_m3u_channels():
     """Получает список каналов из M3U файла"""
+    global PlaylistsFile    
     channels = []
     #m3u_file=PlaylistsDirectory+'/'+getFileValue(SourceNameFile)+'.m3u'
-    m3u_file=PlaylistsDirectory+'/'+'Radio.m3u'
+    m3u_file=PlaylistsDirectory+'/'+PlaylistsFile
+    print(m3u_file)
     if not os.path.exists(m3u_file):
         print(f"M3U файл не найден: "+m3u_file)
         return channels
@@ -100,8 +103,11 @@ def get_m3u_channels():
                 i += 1
             # Если встретили URL без метаданных
             elif line and not line.startswith('#'):
-                # Используем имя файла как название канала
-                channel_name = os.path.basename(line).split('.')[0]
+                # Используем имя файла как название
+                nameFile=os.path.basename(line)
+                #if nameFile.rfind(".")>0:
+                #    nameFile=nameFile[:nameFile.rfind(".")]
+                channel_name = ('000'+str(indP))[-3:]+' '+nameFile
                 channels.append({
                     'name': channel_name,
                     'url': line,
@@ -122,78 +128,78 @@ def get_all_items():
     items = []
     
     # Добавляем файлы из директории
-    #files = get_available_files()
-    #for file in files:
-    #    items.append({
-    #        'name': file,
-    #        'type': 'file',
-    #        'path': os.path.join(FILES_DIRECTORY, file)
-    #    })
+    files = get_available_files()
+    for file in files:
+        items.append({
+            'name': file,
+            'type': 'file',
+            'path': os.path.join(FILES_DIRECTORY, file)
+        })
     items.append({
             'name': 'VOLUMEUP',
-            'type': 'file',
+            'type': 'cntrl',
             'path': 'KEY_VOLUMEUP'
         })
     items.append({
             'name': 'VOLUMEDOWN',
-            'type': 'file',
+            'type': 'cntrl',
             'path': 'KEY_VOLUMEDOWN'
         })
     items.append({
             'name': 'MUTE',
-            'type': 'file',
+            'type': 'cntrl',
             'path': 'KEY_MUTE'
         })
     items.append({
             'name': 'CHANNELUP',
-            'type': 'file',
+            'type': 'cntrl',
             'path': 'KEY_CHANNELUP'
         })
     items.append({
             'name': 'CHANNELDOWN',
-            'type': 'file',
+            'type': 'cntrl',
             'path': 'KEY_CHANNELDOWN'
         })
     items.append({
             'name': 'MENU',
-            'type': 'file',
+            'type': 'cntrl',
             'path': 'KEY_MENU'
         })
     items.append({
             'name': 'UP',
-            'type': 'file',
+            'type': 'cntrl',
             'path': 'KEY_UP'
         })
     items.append({
             'name': 'DOWN',
-            'type': 'file',
+            'type': 'cntrl',
             'path': 'KEY_DOWN'
         })
     items.append({
             'name': 'LEFT',
-            'type': 'file',
+            'type': 'cntrl',
             'path': 'KEY_LEFT'
         })
     items.append({
             'name': 'RIGHT',
-            'type': 'file',
+            'type': 'cntrl',
             'path': 'KEY_RIGHT'
         })
     items.append({
             'name': 'OK',
-            'type': 'file',
+            'type': 'cntrl',
             'path': 'KEY_OK'
         })
     items.append({
             'name': 'INFO',
-            'type': 'file',
+            'type': 'cntrl',
             'path': 'KEY_INFO'
         })
-    #items.append({
-    #        'name': 'EXIT',
-    #        'type': 'file',
-    #        'path': 'KEY_EXIT'
-    #    })
+    items.append({
+            'name': 'EXIT',
+            'type': 'cntrl',
+            'path': 'KEY_EXIT'
+        })
 
     # Добавляем каналы из M3U
     channels = get_m3u_channels()
@@ -224,30 +230,25 @@ def get_all_items():
 
 def launch_item(item):
     """Запускает файл или M3U поток"""
-    
+    global PlaylistsFile    
     # Запуск обычного файла
     if item['type'] == 'file':
         file_path = item['path']
         
         if not os.path.exists(file_path):
             return False, "Файл не найден"
-        
-        # Запускаем в зависимости от расширения
-        if item['name'].endswith('.py'):
-            subprocess.Popen(['python3', file_path])
-        elif item['name'].endswith('.sh'):
-            subprocess.Popen(['bash', file_path])
-        elif item['name'].endswith('.mp3') or item['name'].endswith('.wav'):
-            # Аудио файлы
-            subprocess.Popen(['xdg-open', file_path])
-        elif item['name'].endswith('.mp4') or item['name'].endswith('.avi'):
-            # Видео файлы
-            subprocess.Popen(['xdg-open', file_path])
-        else:
-            subprocess.Popen(['xdg-open', file_path])
-        
-        return True, f"Запущен файл: {item['name']}"
+        PlaylistsFile=item['name']
+        print('PLAYLIST:' + PlaylistsFile[0:-4])
+        #reply = Webr.udpSend('PLAYLIST:' + PlaylistsFile[0:-4])
+        #print(reply)
+        return True, f"Выбран список: {PlaylistsFile}"
     
+    # Запуск M3U потока
+    elif item['type'] == 'cntrl':
+        cur_station='4' #getFileValue(CurrentStationFile)
+        cur_volume='50' #getFileValue(VolumeFile)
+        return True, f"station:{cur_station} volume:{cur_volume}"
+
     # Запуск M3U потока
     elif item['type'] == 'm3u':
         channel_name = item['name']
@@ -259,31 +260,14 @@ def launch_item(item):
         
         stream_url = item['url']
         
-        # Варианты запуска потокового видео/аудио
-        # Вариант 1: Использовать VLC (рекомендуется)
         try:
             #subprocess.Popen(['vlc', stream_url])
             print('PLAY_' + str(play_number))
-            if play_number>0:
-            	reply = Webr.udpSend('PLAY_' + str(play_number))
-            	print(reply)
+            #if play_number>0:
+            #	reply = Webr.udpSend('PLAY_' + str(play_number))
+            #	print(reply)
             return True, f"Запущен канал: {channel_name} в VLC"
         except FileNotFoundError:
-            pass
-        
-        # Вариант 2: Использовать mpv
-        try:
-            subprocess.Popen(['mpv', stream_url])
-            return True, f"Запущен канал: {channel_name} в mpv"
-        except FileNotFoundError:
-            pass
-        
-        # Вариант 3: Использовать xdg-open (откроет в браузере, если это HLS)
-        try:
-            if stream_url.endswith('.m3u8') or 'm3u8' in stream_url:
-                subprocess.Popen(['xdg-open', stream_url])
-                return True, f"Открыт поток: {channel_name} в браузере"
-        except:
             pass
         
         return False, f"Не удалось запустить канал {channel_name}. Установите VLC или mpv."
@@ -294,6 +278,31 @@ def launch_item(item):
 def index():
     items = get_all_items()
     return render_template('index.html', items=items)
+
+@app.route('/undefined')
+def index2():
+    items = get_all_items()
+    return render_template('index.html', items=items)
+
+
+@app.route('/refresh-m3u', methods=['POST'])
+def refresh_m3u():
+    """Принудительно обновляет только M3U список"""
+    
+    try:
+        # Получаем свежие каналы
+        channels = get_m3u_channels()
+        
+        return jsonify({
+            'success': True,
+            'items': [{'name': ch['name'], 'type': 'm3u'} for ch in channels],
+            'count': len(channels)
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 @app.route('/launch', methods=['POST'])
 def launch():
