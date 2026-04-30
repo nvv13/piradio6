@@ -157,16 +157,16 @@ def get_all_items():
             'type': 'cntrl',
             'path': 'KEY_MUTE'
         })
-    #items.append({
-    #        'name': 'CHANNEL UP',
-    #        'type': 'cntrl',
-    #        'path': 'KEY_CHANNELUP'
-    #    })
-    #items.append({
-    #        'name': 'CHANNEL DOWN',
-    #        'type': 'cntrl',
-    #        'path': 'KEY_CHANNELDOWN'
-    #    })
+    items.append({
+            'name': 'CHANNEL UP',
+            'type': 'cntrl',
+            'path': 'KEY_CHANNELUP'
+        })
+    items.append({
+            'name': 'CHANNEL DOWN',
+            'type': 'cntrl',
+            'path': 'KEY_CHANNELDOWN'
+        })
     #items.append({
     #        'name': 'MENU',
     #        'type': 'cntrl',
