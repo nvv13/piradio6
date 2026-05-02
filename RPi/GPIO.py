@@ -221,10 +221,11 @@ def getBoardRevision():
     revision = 1
     with open("/proc/cpuinfo") as f:
         cpuinfo = f.read()
-    rev_hex = re.search(r"(?<=\nRevision)[ |:|\t]*(\w+)", cpuinfo).group(1)
-    rev_int = int(rev_hex,16)
-    if rev_int > 3:
-        revision = 2
+    #rev_hex = re.search(r"(?<=\nRevision)[ |:|\t]*(\w+)", cpuinfo).group(1)
+    #rev_int = int(rev_hex,16)
+    #if rev_int > 3:
+    #    revision = 2
+    revision = 2
     return revision
 
 RPI_REVISION = getBoardRevision()
