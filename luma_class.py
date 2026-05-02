@@ -29,7 +29,7 @@ import pdb
 from luma.core.interface.serial import i2c, spi, pcf8574
 from luma.core.interface.parallel import bitbang_6800
 from luma.core.render import canvas
-from luma.oled.device import ssd1306, ssd1309, ssd1325, ssd1331, sh1106, ws0010
+from luma.oled.device import ssd1306, ssd1309, ssd1325, ssd1331, sh1106, ws0010, ssd1322
 
 from PIL import ImageFont, Image, ImageDraw
 
@@ -39,10 +39,11 @@ RST = None     # on the PiOLED this pin isnt used
 # rev.1 users set port=0
 # substitute spi(device=0, port=0) below if using that interface
 # substitute bitbang_6800(RS=7, E=8, PINS=[25,24,23,27]) below if using that interface
-serial = i2c(port=1, address=0x3C)
+#serial = i2c(port=1, address=0x3C)
+serial = spi(device=0, port=1, gpio_DC=38, gpio_RST=None)
 
 # 128x64 display with hardware I2C:
-oled = sh1106(serial)
+oled = ssd1322(serial)
 
 
 # Test text do determine number of characters to fit the screen
@@ -103,6 +104,8 @@ class LUMA:
             oled = ssd1306(serial,rotate=rotation)
         elif self.device_driver == 'SSD1309':
             oled = ssd1309(serial,rotate=rotation)
+        elif self.device_driver == 'SSD1322':
+            oled = ssd1322(serial,rotate=rotation)
         elif self.device_driver == 'SSD1331':
             oled = ssd1331(serial,rotate=rotation)
         elif self.device_driver == 'WS0010':
@@ -290,8 +293,8 @@ if __name__ == '__main__':
 
     # Luma device for SSD1306, SSD1309, SSD1325, SSD1331, SH1106, SH1106_128x32, WS0010
     # Change to the device you want to test and the font size 
-    device = 'SH1106' 
-    #device = 'SSD1309' 
+    #device = 'SH1106' 
+    device = 'SSD1322' 
     font_size = 12
     font_name = "DejaVuSansMono.ttf"
 
