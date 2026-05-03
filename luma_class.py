@@ -282,7 +282,12 @@ if __name__ == '__main__':
     import os
     from log_class import Log
     from time import strftime
-
+    
+    import OPi.GPIO as GPIO
+    GPIO.setwarnings(False)      # Disable warnings
+    GPIO.setmode(GPIO.BOARD)       # Use BCM GPIO numbers
+    GPIO.setup(40, 0)  # CS
+    
     dateformat = "%H:%M %d/%m/%Y"
     log = None
     UP=1
@@ -370,7 +375,7 @@ if __name__ == '__main__':
 
         except KeyboardInterrupt:
             display.clear()
-            text = centreText("Goodbye") 
+            text = centreText("Goodbye")
             display.out(2,text,None)
             display.update()
             time.sleep(3)
