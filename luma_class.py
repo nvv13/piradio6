@@ -283,10 +283,10 @@ if __name__ == '__main__':
     from log_class import Log
     from time import strftime
     
-    import OPi.GPIO as GPIO
-    GPIO.setwarnings(False)      # Disable warnings
-    GPIO.setmode(GPIO.BOARD)       # Use BCM GPIO numbers
-    GPIO.setup(40, 0)  # CS
+    #import OPi.GPIO as GPIO
+    #GPIO.setwarnings(False)      # Disable warnings
+    #GPIO.setmode(GPIO.BOARD)       # Use BCM GPIO numbers
+    #GPIO.setup(40, 0)  # CS
     
     dateformat = "%H:%M %d/%m/%Y"
     log = None
