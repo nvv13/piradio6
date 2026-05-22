@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 #
-# Raspberry Pi Internet Radio IR Remote Control Class
-# $Id: web_daemon.py,v 1.7 2025/06/03 11:21:17 bob Exp $
+# Raspberry/Orange Pi Internet Radio Web Remote Control Class
+# $Id: web_daemon.py $
 # 
 # Author : Sander Marechal
 # Website http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/
 #
-# Adapted by Bob Rathbone for the Internet Radio
+# Thanks to Bob Rathbone
 # Site   : http://www.bobrathbone.com
 #
-# This is the daemon class for the IR remote control
-# It is called frome ireventd.py
+# Adapted by nvv13 for the Internet Radio
+#
+# This is the daemon class for the web remote control
 #
 # License: GNU V3, See https://www.gnu.org/copyleft/gpl.html
 #
